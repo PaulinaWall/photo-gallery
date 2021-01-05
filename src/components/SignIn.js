@@ -19,7 +19,7 @@ const SignIn = () => {
 		try {
 			setLoading(true)
 			await signin(emailRef.current.value, passwordRef.current.value)
-			navigate('/photographer')
+			navigate(`/${emailRef.current.value}`)
 		} catch (e) {
 			setError(e.message)
 			setLoading(false)

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Container } from 'react-bootstrap';
 
 const LandingPage = () => {
-
 	const navigate = useNavigate();
 
 	const handleOnClick = () => {

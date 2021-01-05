@@ -11,6 +11,8 @@ import NotFound from './components/NotFound';
 import Navigation from './components/Navigation';
 import LandingPage from './components/LandingPage';
 import PhotographerLandingPage from './components/photographerPages/PhotographerLandingPage';
+import CreateAlbum from './components/photographerPages/CreateAlbum';
+import ListAlbums from './components/photographerPages/ListAlbums';
 
 const App = () => {
 	return (
@@ -35,8 +37,18 @@ const App = () => {
 							<SignOut />
 						</Route>
 
-						<Route path="/photographer">
-							<PhotographerLandingPage />
+						<Route path="/:email">
+							<Route to="/" >
+								<PhotographerLandingPage />
+							</Route>
+
+							<Route path="/createAlbum" >
+								<CreateAlbum />
+							</Route>
+
+							<Route path="/listAlbums" >
+								<ListAlbums />
+							</Route>
 						</Route>
 
 						<Route path="*" element={<NotFound />} />
