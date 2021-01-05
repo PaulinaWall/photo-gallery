@@ -1,14 +1,35 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { db } from '../../firebase';
+
+import { useAuth } from '../../contexts/AuthContext';
 
 const CreateAlbum = () => {
 	const [albumTitle, setAlbumTitle] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
+	const { currentUser } = useAuth();
+	const navigate = useNavigate();
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		console.log('submitted');
+		
+		setError(false);
+		setLoading(true);
+
+		try{
+			const docRef = await db.collection('albums').add({
+				albumTitle,
+				owner: currentUser.uid,
+			});
+
+			navigate(`/${currentUser.email}/${docRef.id}`);
+
+		} catch (e) {
+			setError(e.message);
+			setLoading(false);
+		}
 	}
 
 	return (

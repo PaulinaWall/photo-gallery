@@ -13,6 +13,7 @@ import LandingPage from './components/LandingPage';
 import PhotographerLandingPage from './components/photographerPages/PhotographerLandingPage';
 import CreateAlbum from './components/photographerPages/CreateAlbum';
 import ListAlbums from './components/photographerPages/ListAlbums';
+import SingleAlbum from './components/photographerPages/SingleAlbum';
 
 const App = () => {
 	return (
@@ -38,8 +39,12 @@ const App = () => {
 						</Route>
 
 						<Route path="/:email">
-							<Route to="/" >
+							<Route path="/" >
 								<PhotographerLandingPage />
+							</Route>
+
+							<Route path="/:albumId" >
+								<SingleAlbum />
 							</Route>
 
 							<Route path="/createAlbum" >
