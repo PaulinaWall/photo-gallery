@@ -1,36 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Container, Card, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 
-import { db } from '../../firebase';
+import useGetPhotographerGallery from '../../hooks/useGetPhotographerGallery';
 import { useAuth } from '../../contexts/AuthContext';
 
 const ListAlbums = () => {
-	const [albums, setAlbums] = useState([]);
-	const [loading, setLoading] = useState(true);
+	const { gallery, loading } = useGetPhotographerGallery();
 	const { currentUser } = useAuth();
-
-	useEffect(() => {
-		const unsubscribe = db.collection('albums')
-		.onSnapshot(snapshot => {
-			setLoading(true)
-			const snapshotAlbums = []
-
-			snapshot.forEach(doc => {
-				snapshotAlbums.push({
-					id: doc.id,
-					...doc.data(),
-				})
-			})
-
-			setAlbums(snapshotAlbums)
-			setLoading(false)
-		});
-
-		return unsubscribe;
-	}, [])
-
+	console.log(gallery)
 	return (
 		<Container className="mt-3">
 			<h1>Your Albums</h1>
@@ -40,7 +19,7 @@ const ListAlbums = () => {
 					: (
 						<Row>
 							{
-								albums.map((album) => (
+								gallery.albums.map((album) => (
 									<Col sm={12} md={4} lg={4} key={album.id}>
 										<Card>
 											<Card.Body>
