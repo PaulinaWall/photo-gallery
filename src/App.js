@@ -22,50 +22,48 @@ const App = () => {
 		<Router>
 			<AuthContextProvider>
 				<SimpleReactLightbox>
-				<Routes>
 					<Navigation />
-					<Container>
-							<Route path="/">
-								<LandingPage />
+					<Routes>
+						<Route path="/">
+							<LandingPage />
+						</Route>
+
+						<Route path="/signin">
+							<SignIn />
+						</Route>
+
+						<Route path="/signup">
+							<SignUp />
+						</Route>
+
+						<Route path="/signout">
+							<SignOut />
+						</Route>
+
+						<Route path="/:email">
+							<Route path="/" >
+								<PhotographerLandingPage />
 							</Route>
 
-							<Route path="/signin">
-								<SignIn />
+							<Route path="/:albumId" >
+								<SingleAlbum />
 							</Route>
 
-							<Route path="/signup">
-								<SignUp />
+							<Route path="/createAlbum" >
+								<CreateAlbum />
 							</Route>
 
-							<Route path="/signout">
-								<SignOut />
+							<Route path="/listAlbums" >
+								<ListAlbums />
 							</Route>
 
-							<Route path="/:email">
-								<Route path="/" >
-									<PhotographerLandingPage />
-								</Route>
+						</Route>
 
-								<Route path="/:albumId" >
-									<SingleAlbum />
-								</Route>
-
-								<Route path="/createAlbum" >
-									<CreateAlbum />
-								</Route>
-
-								<Route path="/listAlbums" >
-									<ListAlbums />
-								</Route>
-
-							</Route>
-
-							<Route path="*" element={<NotFound />} />
-					</Container>
-					<Route path="/customer/:customerId">
-						<ImageGallery />
-					</Route>
-				</Routes>
+						<Route path="*" element={<NotFound />} />
+						<Route path="/customer/:customerId">
+							<ImageGallery />
+						</Route>
+					</Routes>
 				</SimpleReactLightbox>
 			</AuthContextProvider>
 		</Router>
