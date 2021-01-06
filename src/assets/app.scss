@@ -1,3 +1,10 @@
  @import "~bootstrap/scss/bootstrap";
  @import "dropzone";
  
+ .checkedIcon{
+	color: green;
+ }
+
+ .unCheckedIcon{
+	color: lightgray;
+ }

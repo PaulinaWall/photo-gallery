@@ -15,6 +15,7 @@ import PhotographerLandingPage from './components/photographerPages/Photographer
 import CreateAlbum from './components/photographerPages/CreateAlbum';
 import ListAlbums from './components/photographerPages/ListAlbums';
 import SingleAlbum from './components/photographerPages/SingleAlbum';
+import ImageGallery from './components/customerPages/ImageGallery';
 
 const App = () => {
 	return (
@@ -39,6 +40,10 @@ const App = () => {
 							<Route path="/signout">
 								<SignOut />
 							</Route>
+							
+							<Route path="/:customerId">
+								<ImageGallery />
+							</Route>
 
 							<Route path="/:email">
 								<Route path="/" >
@@ -56,6 +61,7 @@ const App = () => {
 								<Route path="/listAlbums" >
 									<ListAlbums />
 								</Route>
+
 							</Route>
 
 							<Route path="*" element={<NotFound />} />
