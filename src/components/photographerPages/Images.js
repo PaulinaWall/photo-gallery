@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Button } from 'react-bootstrap';
+import { Row, Col, Card, Button, Container } from 'react-bootstrap';
 import { SRLWrapper } from 'simple-react-lightbox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -20,11 +20,11 @@ const Images = ({ images }) => {
 	}
 
 	const handleCreateCustomerGallery = () => {
-		navigate(`/${albumId}`)
+		navigate(`/customer/${albumId}`)
 	}
 
 	return (
-		<>
+		<Container>
 			<SRLWrapper>
 				<Row className="my-3">
 					{
@@ -60,7 +60,7 @@ const Images = ({ images }) => {
 				<Button className="ml-auto mb-2" onClick={handleCreateCustomerGallery}>Create gallery for customer</Button>
 				<Button className="ml-auto">Create new album with marked images</Button>
 			</div>
-		</>
+		</Container>
 	)
 }
 

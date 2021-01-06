@@ -22,9 +22,9 @@ const App = () => {
 		<Router>
 			<AuthContextProvider>
 				<SimpleReactLightbox>
+				<Routes>
 					<Navigation />
 					<Container>
-						<Routes>
 							<Route path="/">
 								<LandingPage />
 							</Route>
@@ -39,10 +39,6 @@ const App = () => {
 
 							<Route path="/signout">
 								<SignOut />
-							</Route>
-							
-							<Route path="/:customerId">
-								<ImageGallery />
 							</Route>
 
 							<Route path="/:email">
@@ -65,8 +61,11 @@ const App = () => {
 							</Route>
 
 							<Route path="*" element={<NotFound />} />
-						</Routes>
 					</Container>
+					<Route path="/customer/:customerId">
+						<ImageGallery />
+					</Route>
+				</Routes>
 				</SimpleReactLightbox>
 			</AuthContextProvider>
 		</Router>

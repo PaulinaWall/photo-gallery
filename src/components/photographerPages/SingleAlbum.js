@@ -1,6 +1,7 @@
 import React, { useState, useEffect} from 'react';
 import { useParams } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
+import { Container } from 'react-bootstrap';
 
 import { db } from '../../firebase';
 import UploadImages from './UploadImages';
@@ -45,9 +46,8 @@ const SingleAlbum = () => {
 		return unsubscribe;
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [albumId]);
-
 	return (
-		<>
+		<Container>
 			<h2 className="mb-3">Album: {singleAlbum && singleAlbum.albumTitle}</h2>
 
 			<UploadImages albumId={albumId} />
@@ -55,10 +55,10 @@ const SingleAlbum = () => {
 			<hr />
 
 			{loading
-				? (<BarLoader color={"#888"} size={20} />)
+				? (<div className="d-flex justify-content-center 		my-5"><BarLoader color={"#888"} size={100} /></div>)
 				: (<Images images={images} />)
 			}
-		</>
+		</Container>
 	)
 }
 

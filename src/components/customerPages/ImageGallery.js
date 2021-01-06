@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { useParams } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
-import { Row, Col, Card } from 'react-bootstrap';
+import { Row, Col, Card, Container } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 
@@ -13,7 +13,7 @@ const ImageGallery = () => {
 	const [checked, setChecked] = useState();
 	
 	return(
-		<>
+		<Container>
 			{loading && (<div className="d-flex justify-content-center my-5"><BarLoader color={"#888"} size={100} /></div>)}
 			<Row className="mt-3">
 			{
@@ -41,7 +41,7 @@ const ImageGallery = () => {
 					))
 			}
 			</Row>
-		</>
+		</Container>
 	)
 }
 
