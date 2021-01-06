@@ -9,7 +9,8 @@ import useGetImages from '../../hooks/useGetImages';
 
 const ImageGallery = () => {
 	const { customerId } = useParams();
-	const { images, loading } = useGetImages(customerId);
+	const albumId = customerId.slice(-1);
+	const { images, loading } = useGetImages(albumId);
 	const [checked, setChecked] = useState();
 	
 	return(

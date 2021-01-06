@@ -4,23 +4,25 @@ import { SRLWrapper } from 'simple-react-lightbox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
+import { uid } from 'uid';
+
+import { useCustomerFunctions } from '../../contexts/CustomerContext';
 
 const Images = ({ images }) => {
 	const { albumId } = useParams();
 	const [checked, setChecked] = useState(false);
 	const navigate = useNavigate();
 
-	useEffect(() => {
-
-	}, [checked])
-
-	const handleCheckOnClick = (index) => {
+	const handleCheckOnClick = (e, index) => {
+		console.log(e.target.id)
 		setChecked(!checked)
 		console.log(images[index])
 	}
 
 	const handleCreateCustomerGallery = () => {
-		navigate(`/customer/${albumId}`)
+		const randomId = uid(10);
+		const customerId = randomId.concat(albumId.toString())
+		navigate(`/customer/${customerId}`)
 	}
 
 	return (
@@ -35,9 +37,11 @@ const Images = ({ images }) => {
 										<Card className="mb-3">
 											<Card.Header>
 												<FontAwesomeIcon
+													type="button"
+													id={index}
 													className={checked ? 'checkedIcon' : 'unCheckedIcon'} 
 													icon={faCheck} 
-													onClick={() => handleCheckOnClick(index)}
+													onClick={(e) => handleCheckOnClick(e, index)}
 												/>
 											</Card.Header>
 											<a href={image.url} title="View image in lightbox" data-attribute="SRL">
