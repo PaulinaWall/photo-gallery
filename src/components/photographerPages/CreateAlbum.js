@@ -22,33 +22,34 @@ const CreateAlbum = () => {
 
 		try{
 			if(gallery.owner === currentUser.uid){
-				console.log('hej det finns ett gallery')
 				await db.collection('galleries')
 				.doc(gallery.id)
 				.get()
 				.then((snapshot) => {
 					const albums = snapshot.data().albums;
-					albums.push({albumTitle})
+					albums.push({albumTitle, images: []})
 
 					db.collection('galleries').doc(gallery.id).set({
 						albums,
 					}, {merge: true})
 					.then(() => {
 						console.log('Updated albums with success');
+						navigate(`/${currentUser.email}/listAlbums`);
 					})
 					.catch((e) => {
 						setError(e.message);
 					})
 				})
 			}else {
-				const docRef = await db.collection('galleries').add({
+				await db.collection('galleries').add({
 					owner: currentUser.uid,
 					albums: [{
 						albumTitle,
+						images: [],
 					}]
 				});
 
-				navigate(`/${currentUser.email}/${docRef.id}`);
+				navigate(`/${currentUser.email}/listAlbums`);
 			}
 
 		} catch (e) {

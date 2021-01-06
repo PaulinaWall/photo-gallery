@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import SimpleReactLightbox from 'simple-react-lightbox'
 
 import './assets/app.scss';
 import AuthContextProvider from './contexts/AuthContext';
@@ -19,46 +20,48 @@ const App = () => {
 	return (
 		<Router>
 			<AuthContextProvider>
-				<Navigation />
-				<Container>
-					<Routes>
-						<Route path="/">
-							<LandingPage />
-						</Route>
-
-						<Route path="/signin">
-							<SignIn />
-						</Route>
-
-						<Route path="/signup">
-							<SignUp />
-						</Route>
-
-						<Route path="/signout">
-							<SignOut />
-						</Route>
-
-						<Route path="/:email">
-							<Route path="/" >
-								<PhotographerLandingPage />
+				<SimpleReactLightbox>
+					<Navigation />
+					<Container>
+						<Routes>
+							<Route path="/">
+								<LandingPage />
 							</Route>
 
-							<Route path="/:albumId" >
-								<SingleAlbum />
+							<Route path="/signin">
+								<SignIn />
 							</Route>
 
-							<Route path="/createAlbum" >
-								<CreateAlbum />
+							<Route path="/signup">
+								<SignUp />
 							</Route>
 
-							<Route path="/listAlbums" >
-								<ListAlbums />
+							<Route path="/signout">
+								<SignOut />
 							</Route>
-						</Route>
 
-						<Route path="*" element={<NotFound />} />
-					</Routes>
-				</Container>
+							<Route path="/:email">
+								<Route path="/" >
+									<PhotographerLandingPage />
+								</Route>
+
+								<Route path="/:albumId" >
+									<SingleAlbum />
+								</Route>
+
+								<Route path="/createAlbum" >
+									<CreateAlbum />
+								</Route>
+
+								<Route path="/listAlbums" >
+									<ListAlbums />
+								</Route>
+							</Route>
+
+							<Route path="*" element={<NotFound />} />
+						</Routes>
+					</Container>
+				</SimpleReactLightbox>
 			</AuthContextProvider>
 		</Router>
 	)

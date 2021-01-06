@@ -7,7 +7,6 @@ const useGetPhotographerGallery = () => {
 	const [gallery, setGallery] = useState();
 	const [loading, setLoading] = useState(true);
 	const { currentUser } = useAuth();
-	// console.log('GALLERY', gallery)
 	useEffect(() => {
 		const unsubscribe = db.collection('galleries')
 		.where('owner', '==', currentUser.uid)

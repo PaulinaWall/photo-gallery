@@ -9,7 +9,6 @@ import { useAuth } from '../../contexts/AuthContext';
 const ListAlbums = () => {
 	const { gallery, loading } = useGetPhotographerGallery();
 	const { currentUser } = useAuth();
-	console.log(gallery)
 	return (
 		<Container className="mt-3">
 			<h1>Your Albums</h1>
@@ -19,12 +18,12 @@ const ListAlbums = () => {
 					: (
 						<Row>
 							{
-								gallery.albums.map((album) => (
-									<Col sm={12} md={4} lg={4} key={album.id}>
+								gallery.albums.map((album, index) => (
+									<Col className="mt-3" sm={12} md={4} lg={4} key={index}>
 										<Card>
 											<Card.Body>
 												<Card.Title>
-													<Link to={`/${currentUser.email}/${album.id}`}>
+													<Link to={`/${currentUser.email}/${index}`}>
 														{album.albumTitle}
 													</Link>
 												</Card.Title>
