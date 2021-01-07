@@ -11,10 +11,10 @@ const useGetImages = (customerId) => {
 	useEffect(() => {
 		db.collection('galleries').doc(gallery?.id).get()
 		.then(doc => {
-			setImages(doc.data()?.albums[customerId].images);
+			const album = doc.data()?.albums?.find((album) => album.albumTitle === customerId);
+			setImages(album?.images);
 			setLoading(false);
 		})
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [customerId, gallery])
 
 	return {images, loading}

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 import { SRLWrapper } from 'simple-react-lightbox';
-import { Row, Col, Card, Container, Button } from 'react-bootstrap';
+import { Row, Col, Card, Container, Button, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 
@@ -12,14 +12,27 @@ import { useAuth } from '../../contexts/AuthContext';
 
 const ImageGallery = () => {
 	const { customerId } = useParams();
-	const { liked } = useCustomerFunctions();
+	const { liked, createCustomerAlbum } = useCustomerFunctions();
 	const { currentUser } = useAuth();
-	const albumId = customerId.slice(-1);
-	const { images, loading } = useGetImages(albumId);
+	const { images, loading } = useGetImages(customerId);
+	const [msg, setMsg] = useState(null);
+	const [showModal, setShowModal] = useState(false)
 
-	const handleOnClick = (index) => {
-		liked(albumId, index, currentUser);
-	}
+	const filterLikedImages = () => {
+		const likedImages = images.filter((image) => image.liked === true);
+		return likedImages;
+	};
+
+	const handleLikeOnClick = (index) => {
+		liked(customerId, index, currentUser);
+	};
+
+	const handleSaveOnClick = () => {
+		const likedImages = filterLikedImages();
+		createCustomerAlbum(likedImages, `Album from customer: ${customerId}`);
+		setMsg('Thanks for choosing your favorites!');
+		setShowModal(true);
+	};
 	
 	return(
 		<Container>
@@ -35,7 +48,7 @@ const ImageGallery = () => {
 											<FontAwesomeIcon
 												className={image.liked ? 'likedIcon' : 'unLikedIcon'} 
 												icon={faHeart} 
-												onClick={() => handleOnClick(index)}
+												onClick={() => handleLikeOnClick(index)}
 											/>
 										</Card.Header>
 										<a href={image.url} title="View image in lightbox" data-attribute="SRL">
@@ -53,7 +66,24 @@ const ImageGallery = () => {
 				</Row>
 			</SRLWrapper>
 			<div className="d-flex">
-				<Button className="ml-auto mt-3">Send choosen pictures to photographer</Button>
+				{
+					!msg
+					? 	<Button onClick={handleSaveOnClick} className="ml-auto 			m-3">Send choosen pictures to photographer
+						</Button>
+					:   <Modal
+							size="sm"
+							show={showModal}
+							onHide={() => setShowModal(false)}
+							aria-labelledby="example-modal-sizes-title-sm"
+						>
+							<Modal.Header closeButton>
+							<Modal.Title id="example-modal-sizes-title-sm">
+								Thanks
+							</Modal.Title>
+							</Modal.Header>
+							<Modal.Body>{msg}</Modal.Body>
+						</Modal>
+				}
 			</div>
 		</Container>
 	)

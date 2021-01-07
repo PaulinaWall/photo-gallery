@@ -29,12 +29,6 @@ const ListAlbums = () => {
 					owner: currentUser.uid,
 					albums
 				})
-				.then(() => {
-					console.log('updated')
-				})
-				.catch((e) => {
-					console.log(e.message)
-				})
 			})
 		} catch (e) {
 			console.log(e.message);

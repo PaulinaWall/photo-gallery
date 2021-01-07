@@ -5,6 +5,7 @@ import SimpleReactLightbox from 'simple-react-lightbox'
 import './assets/app.scss';
 import AuthContextProvider from './contexts/AuthContext';
 import CustomerContextProvider from './contexts/CustomerContext';
+import AuthRoute from './components/AuthRoute'
 import SignIn from './components/SignIn';
 import SignOut from './components/SignOut';
 import SignUp from './components/SignUp';
@@ -42,21 +43,21 @@ const App = () => {
 							</Route>
 
 							<Route path="/:email">
-								<Route path="/" >
+								<AuthRoute path="/" >
 									<PhotographerLandingPage />
-								</Route>
+								</AuthRoute>
 
-								<Route path="/:albumId" >
+								<AuthRoute path="/:albumId" >
 									<SingleAlbum />
-								</Route>
+								</AuthRoute>
 
-								<Route path="/createAlbum" >
+								<AuthRoute path="/createAlbum" >
 									<CreateAlbum />
-								</Route>
+								</AuthRoute>
 
-								<Route path="/listAlbums" >
+								<AuthRoute path="/listAlbums" >
 									<ListAlbums />
-								</Route>
+								</AuthRoute>
 
 							</Route>
 
