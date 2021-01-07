@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Row, Col, Card, Button, Container } from 'react-bootstrap';
 import { SRLWrapper } from 'simple-react-lightbox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,15 +8,13 @@ import { uid } from 'uid';
 
 import { useCustomerFunctions } from '../../contexts/CustomerContext';
 
-const Images = ({ images }) => {
+const Images = ({ images, currentUser }) => {
 	const { albumId } = useParams();
-	const [checked, setChecked] = useState(false);
 	const navigate = useNavigate();
+	const { checked } = useCustomerFunctions();
 
-	const handleCheckOnClick = (e, index) => {
-		console.log(e.target.id)
-		setChecked(!checked)
-		console.log(images[index])
+	const handleCheckOnClick = (index) => {
+		checked(albumId, index, currentUser);
 	}
 
 	const handleCreateCustomerGallery = () => {
@@ -37,11 +35,9 @@ const Images = ({ images }) => {
 										<Card className="mb-3">
 											<Card.Header>
 												<FontAwesomeIcon
-													type="button"
-													id={index}
-													className={checked ? 'checkedIcon' : 'unCheckedIcon'} 
+													className={image.checked ? 'checkedIcon' : 'unCheckedIcon'} 
 													icon={faCheck} 
-													onClick={(e) => handleCheckOnClick(e, index)}
+													onClick={() => handleCheckOnClick(index)}
 												/>
 											</Card.Header>
 											<a href={image.url} title="View image in lightbox" data-attribute="SRL">

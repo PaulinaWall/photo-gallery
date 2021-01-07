@@ -56,7 +56,7 @@ const SingleAlbum = () => {
 
 			{loading
 				? (<div className="d-flex justify-content-center 		my-5"><BarLoader color={"#888"} size={100} /></div>)
-				: (<Images images={images} />)
+				: (<Images images={images} currentUser={currentUser} />)
 			}
 		</Container>
 	)
