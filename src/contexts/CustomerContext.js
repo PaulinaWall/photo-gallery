@@ -12,6 +12,26 @@ const useCustomerFunctions = () => {
 const CustomerContextProvider = (props) => {
 	const { gallery } = useGetPhotographerGallery();
 
+	const liked = async (album, image, currentUser) => {
+		return await db.collection('galleries').doc(gallery.id).get()
+		.then((snapshot) => {
+			const albums = snapshot.data().albums;
+			const imagesArray = snapshot.data().albums[album].images;
+			const selectedImage = snapshot.data().albums[album].images[image];
+			selectedImage.liked = !selectedImage.liked;
+			imagesArray[image] = selectedImage;
+			albums[album].images = imagesArray;
+
+			db.collection('galleries').doc(gallery.id).set({
+				albums,
+				owner: currentUser.uid,
+			})
+		})
+		.catch((e) => {
+			console.log(e.message);
+		})
+	}
+
 	const checked = async (album, image, currentUser) => {
 		return await db.collection('galleries').doc(gallery.id).get()
 		.then((snapshot) => {
@@ -34,6 +54,7 @@ const CustomerContextProvider = (props) => {
 
 	const contextValues = {
 		checked,
+		liked,
 	}
 
 	return (

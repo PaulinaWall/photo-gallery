@@ -43,6 +43,8 @@ const useUploadImage = (image, albumId = null) => {
 				path: snapshot.ref.fullPath,
 				size: image.size,
 				type: image.type,
+				checked: false,
+				liked: false,
 				url,
 			};
 

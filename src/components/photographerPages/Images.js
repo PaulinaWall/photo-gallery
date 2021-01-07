@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Row, Col, Card, Button, Container } from 'react-bootstrap';
 import { SRLWrapper } from 'simple-react-lightbox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
