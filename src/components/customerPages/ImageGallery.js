@@ -54,11 +54,6 @@ const ImageGallery = () => {
 										<a href={image.url} title="View image in lightbox" data-attribute="SRL">
 											<Card.Img variant="top" src={image.url} title={image.name} />
 										</a>
-										<Card.Body>
-											<Card.Text className="text-muted small">
-												{image.name} ({Math.round(image.size/1024)} kb)
-											</Card.Text>
-										</Card.Body>
 									</Card>
 								</Col>
 							))
