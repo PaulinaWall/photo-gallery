@@ -73,10 +73,9 @@ const ImageGallery = () => {
 					:   <Modal
 							size="sm"
 							show={showModal}
-							onHide={() => setShowModal(false)}
 							aria-labelledby="example-modal-sizes-title-sm"
 						>
-							<Modal.Header closeButton>
+							<Modal.Header>
 							<Modal.Title id="example-modal-sizes-title-sm">
 								Thanks
 							</Modal.Title>

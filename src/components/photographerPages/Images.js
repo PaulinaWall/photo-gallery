@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Col, Card, Button, Container } from 'react-bootstrap';
+import { Row, Col, Card, Button, Container, Modal, Form } from 'react-bootstrap';
 import { SRLWrapper } from 'simple-react-lightbox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -13,7 +13,10 @@ const Images = ({ images }) => {
 	const { albumId } = useParams();
 	const { checked, createCustomerAlbum } = useCustomerFunctions();
 	const { currentUser } = useAuth();
-	const [customerId, setCustomerId] = useState();
+	const [customerUrl, setCustomerUrl] = useState(false);
+	const [showCustomerUrl, setShowCustomerUrl] = useState(false);
+	const [albumTitle, setAlbumTitle] = useState('');
+	const [show, setShow] = useState(false);
 
 	const filterCheckedImages = () => {
 		const checkedImages = images.filter((image) => image.checked === true);
@@ -26,11 +29,22 @@ const Images = ({ images }) => {
 
 	const handleCreateCustomerGallery = () => {
 		const randomId = uid(10);
-		setCustomerId(randomId.concat(albumId.toString()));
+		setCustomerUrl(`http://localhost:3000/customer/${randomId}`);
+		setShowCustomerUrl(true);
 		const checkedImages = filterCheckedImages();
-		createCustomerAlbum(checkedImages, randomId.concat(albumId.toString()));
+		createCustomerAlbum(checkedImages, randomId);
 	};
 
+	const handleCreateNewAlbumOnClick = () => {
+		setShow(true);
+	};
+
+	const handleSaveNewAlbum = () => {
+		const checkedImages = filterCheckedImages();
+		createCustomerAlbum(checkedImages, albumTitle);
+	};
+
+	console.log(customerUrl)
 	return (
 		<Container>
 			<SRLWrapper>
@@ -65,13 +79,48 @@ const Images = ({ images }) => {
 				</Row>
 			</SRLWrapper>
 			<div className="d-flex flex-column">
-				{
-					customerId 
-					? <p className="ml-auto mb-2">http://localhost:3000/customer/{customerId}</p>
-					: <Button className="ml-auto mb-2" onClick={handleCreateCustomerGallery}>Create gallery for customer</Button>
-				}
-				<Button className="ml-auto">Create new album with marked images</Button>
+				<Button className="ml-auto mb-2" onClick={handleCreateCustomerGallery}>Create gallery for customer</Button>
+				
+
+				<Button onClick={handleCreateNewAlbumOnClick} className="ml-auto">Create new album with marked images</Button>
 			</div>
+			<Modal
+				size="sm"
+				show={showCustomerUrl}
+				aria-labelledby="example-modal-sizes-title-sm"
+				onHide={() => setShowCustomerUrl(false)}
+			>
+				<Modal.Header closeButton>
+				<Modal.Title id="example-modal-sizes-title-sm">
+					{customerUrl}
+				</Modal.Title>
+				</Modal.Header>
+			</Modal>
+
+			<Modal show={show} onHide={() => setShow(false)}>
+				<Modal.Header closeButton>
+				<Modal.Title>Add album title</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<Form>
+						<Form.Control
+							type="album-title"
+							onChange={(e) => setAlbumTitle(e.target.value)}
+							value={albumTitle}
+							placeholder="Album Title"
+							required
+						/>
+					</Form>
+				</Modal.Body>
+				<Modal.Footer>
+				<Button variant="secondary" onClick={() => setShow(false)}>
+					Close
+				</Button>
+				<Button variant="primary" onClick={() => handleSaveNewAlbum()}>
+					Create updated Album
+				</Button>
+				</Modal.Footer>
+			</Modal>
 		</Container>
 	)
 }
