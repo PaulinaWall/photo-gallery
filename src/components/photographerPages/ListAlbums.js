@@ -18,7 +18,11 @@ const ListAlbums = () => {
 	const [error, setError] = useState(false);
 
 	const handleClose = () => setShow(false);
-	const handleShow = (index) => {setShow(true); setIndex(index);}
+	const handleShow = (index, title) => {
+		setShow(true); 
+		setIndex(index); 
+		setAlbumTitle(title);
+	}
 
 	const handleSave = async () => {
 		try {
@@ -52,15 +56,15 @@ const ListAlbums = () => {
 										<Col className="mt-3" sm={12} md={4} lg={4} key={index}>
 											<Card className="album-card">
 												<Card.Body className="pb-0">
-													<Card.Title>
-														<div className="album-links">
-															<Link className="mb-3" to={`/${currentUser.email}/${album.id}`}>
+													<Card.Title className="card-title">
+														<div className="card-title album-links">
+															<Link className="mb-3 albumList-links" to={`/${currentUser.email}/${album.id}`}>
 																{album.albumTitle}
 															</Link>
 														</div>
 													</Card.Title>
 												</Card.Body>
-												<Button onClick={() => handleShow(index)}>Change Album Title</Button>
+												<Button className="m-3" onClick={() => handleShow(index, album.albumTitle)}>Change Album Title</Button>
 											</Card>
 										</Col>
 									)
@@ -80,7 +84,7 @@ const ListAlbums = () => {
 							type="album-title"
 							onChange={(e) => setAlbumTitle(e.target.value)}
 							value={albumTitle}
-							placeholder="Album Title"
+							placeholder={albumTitle}
 							required
 						/>
 					</Form>

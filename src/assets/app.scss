@@ -28,7 +28,16 @@ a{
 	background-color: whitesmoke;
 	box-shadow: 2px 2px 2px gray;
 }
- 
+
+.albumList-links{
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.card-title{
+	height: 100%;
+}
+
 .checkedIcon{
 	color: green;
 }
@@ -54,7 +63,7 @@ a{
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	padding: 40px;
+	padding: 30px;
 }
 
 .jumbotron-image{
