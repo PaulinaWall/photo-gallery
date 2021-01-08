@@ -33,11 +33,22 @@ const Images = ({ images }) => {
 		}
 	};
 
+	const createNewAlbum = async (images) => {
+		try{
+			await db.collection('albums').add({
+				albumTitle: albumId,
+				owner: currentUser.uid,
+			});
+		} catch (e) {
+			setError(e.message);
+		}
+	}
+
 	const handleCreateCustomerGallery = () => {
-		setCustomerUrl(`http://localhost:3000/customer/${albumId}`);
+		setCustomerUrl(`http://localhost:3000/review/${albumId}`);
 		setShowCustomerUrl(true);
 		const checkedImages = filterCheckedImages();
-		// create new album of checked images
+		createNewAlbum(checkedImages);
 	};
 
 	const handleCreateNewAlbumOnClick = () => {
@@ -46,7 +57,7 @@ const Images = ({ images }) => {
 
 	const handleSaveNewAlbum = () => {
 		const checkedImages = filterCheckedImages();
-		// create new album of checked images with owner
+		createNewAlbum(checkedImages);
 	};
 
 	return (
@@ -81,24 +92,13 @@ const Images = ({ images }) => {
 				</Row>
 			</SRLWrapper>
 			<div className="mb-3 d-flex flex-column">
-				<Button className="ml-auto mb-2" onClick={handleCreateCustomerGallery}>Create gallery for customer</Button>
-				
-
+				{
+					showCustomerUrl 
+					? <p className="ml-auto mb-2">{customerUrl}</p>
+					: <Button className="ml-auto mb-2" onClick={handleCreateCustomerGallery}>Create gallery for customer</Button>
+				}
 				<Button onClick={handleCreateNewAlbumOnClick} className="ml-auto">Create new album with marked images</Button>
 			</div>
-			<Modal
-				animation={false}
-				size="sm"
-				show={showCustomerUrl}
-				aria-labelledby="example-modal-sizes-title-sm"
-				onHide={() => setShowCustomerUrl(false)}
-			>
-				<Modal.Header closeButton>
-				<Modal.Title id="example-modal-sizes-title-sm">
-					{customerUrl}
-				</Modal.Title>
-				</Modal.Header>
-			</Modal>
 
 			<Modal show={show} animation={false} onHide={() => setShow(false)}>
 				<Modal.Header closeButton>

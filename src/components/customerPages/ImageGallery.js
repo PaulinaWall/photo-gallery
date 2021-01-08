@@ -2,20 +2,20 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 import { SRLWrapper } from 'simple-react-lightbox';
-import { Row, Col, Card, Container, Button, Modal } from 'react-bootstrap';
+import { Row, Col, Card, Container, Button, Modal, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 
 import useGetImages from '../../hooks/useGetImages';
-import { useCustomerFunctions } from '../../contexts/CustomerContext';
+import { db } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
 
 const ImageGallery = () => {
-	const { customerId } = useParams();
-	const { liked, createCustomerAlbum } = useCustomerFunctions();
+	const { albumId } = useParams();
 	const { currentUser } = useAuth();
-	const { images, loading } = useGetImages(customerId);
+	const { images, loading } = useGetImages(albumId);
 	const [msg, setMsg] = useState(null);
+	const [error, setError] = useState();
 	const [showModal, setShowModal] = useState(false)
 
 	const filterLikedImages = () => {
@@ -23,19 +23,40 @@ const ImageGallery = () => {
 		return likedImages;
 	};
 
-	const handleLikeOnClick = (index) => {
-		liked(customerId, index, currentUser);
+	const createNewAlbum = async (images, title) => {
+		try{
+			await db.collection('albums').add({
+				albumTitle: title,
+				owner: currentUser.uid,
+			});
+		} catch (e) {
+			setError(e.message);
+		}
+	}
+
+	const handleLikeOnClick = async (index) => {
+		try{
+			await db.collection('images').doc(images[index].id).set({
+				...images[index],
+				liked: !images[index].liked,
+			});
+		} catch(e) {
+			setError(e.message);
+		}
 	};
 
 	const handleSaveOnClick = () => {
 		const likedImages = filterLikedImages();
-		createCustomerAlbum(likedImages, `Album from customer: ${customerId}`);
+		createNewAlbum(likedImages, `Customer album ${albumId}`);
 		setMsg('Thanks for choosing your favorites!');
 		setShowModal(true);
 	};
 	
 	return(
 		<Container>
+			{
+				error && <Alert variant="danger">{error}</Alert>
+			}
 			{loading && (<div className="d-flex justify-content-center my-5"><BarLoader color={"#888"} size={100} /></div>)}
 			<SRLWrapper>
 				<Row className="mt-3">
@@ -66,6 +87,7 @@ const ImageGallery = () => {
 					? 	<Button onClick={handleSaveOnClick} className="ml-auto 			m-3">Send choosen pictures to photographer
 						</Button>
 					:   <Modal
+							animation={false}
 							size="sm"
 							show={showModal}
 							aria-labelledby="example-modal-sizes-title-sm"

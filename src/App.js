@@ -4,7 +4,6 @@ import SimpleReactLightbox from 'simple-react-lightbox'
 
 import './assets/app.scss';
 import AuthContextProvider from './contexts/AuthContext';
-import CustomerContextProvider from './contexts/CustomerContext';
 import AuthRoute from './components/AuthRoute'
 import SignIn from './components/SignIn';
 import SignOut from './components/SignOut';
@@ -22,52 +21,50 @@ const App = () => {
 	return (
 		<Router>
 			<AuthContextProvider>
-				<CustomerContextProvider>
-					<SimpleReactLightbox>
-						<Navigation />
-						<Routes>
-							<Route path="/">
-								<LandingPage />
-							</Route>
+				<SimpleReactLightbox>
+					<Navigation />
+					<Routes>
+						<Route path="/">
+							<LandingPage />
+						</Route>
 
-							<Route path="/signin">
-								<SignIn />
-							</Route>
+						<Route path="/signin">
+							<SignIn />
+						</Route>
 
-							<Route path="/signup">
-								<SignUp />
-							</Route>
+						<Route path="/signup">
+							<SignUp />
+						</Route>
 
-							<Route path="/signout">
-								<SignOut />
-							</Route>
+						<Route path="/signout">
+							<SignOut />
+						</Route>
 
-							<Route path="/:email">
-								<AuthRoute path="/" >
-									<PhotographerLandingPage />
-								</AuthRoute>
+						<Route path="/:email">
+							<AuthRoute path="/" >
+								<PhotographerLandingPage />
+							</AuthRoute>
 
-								<AuthRoute path="/:albumId" >
-									<SingleAlbum />
-								</AuthRoute>
+							<AuthRoute path="/:albumId" >
+								<SingleAlbum />
+							</AuthRoute>
 
-								<AuthRoute path="/createAlbum" >
-									<CreateAlbum />
-								</AuthRoute>
+							<AuthRoute path="/createAlbum" >
+								<CreateAlbum />
+							</AuthRoute>
 
-								<AuthRoute path="/listAlbums" >
-									<ListAlbums />
-								</AuthRoute>
+							<AuthRoute path="/listAlbums" >
+								<ListAlbums />
+							</AuthRoute>
 
-							</Route>
+						</Route>
 
-							<Route path="*" element={<NotFound />} />
-							<Route path="/customer/:customerId">
-								<ImageGallery />
-							</Route>
-						</Routes>
-					</SimpleReactLightbox>
-				</CustomerContextProvider>
+						<Route path="*" element={<NotFound />} />
+						<Route path="/review/:albumId">
+							<ImageGallery />
+						</Route>
+					</Routes>
+				</SimpleReactLightbox>
 			</AuthContextProvider>
 		</Router>
 	)
