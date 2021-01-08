@@ -24,7 +24,11 @@ const Navigation = () => {
 										<NavLink to="/signout" className="dropdown-item">Sign Out</NavLink>
 									</NavDropdown>
 								) : (
-									<NavLink to="/signin" className="nav-link">Sign In</NavLink>
+									<NavDropdown title={'Menu'} id="basic-nav-dropdown">
+										<NavLink to="/signin" className="dropdown-item">Sign In</NavLink>
+										<NavDropdown.Divider />
+										<NavLink to="/signup" className="dropdown-item">Create account</NavLink>
+									</NavDropdown>
 								)
 							}
 						</Nav>
