@@ -66,7 +66,7 @@ const UploadImages = ({ albumId }) => {
 				</div>
 			)}
 
-			{uploadProgress !== null && (<ProgressBar variant="success" animated now={uploadProgress} />)}
+			{uploadProgress !== null && (<ProgressBar variant="info" animated now={uploadProgress} />)}
 
 			{
 				message && 

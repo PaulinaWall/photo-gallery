@@ -46,6 +46,10 @@ const ListAlbums = () => {
 				<Image className="jumbotron-image" src={polaroid1276996_1920} fluid />
 			</div>
 			{
+				albums.length < 1 && <h2 className="mt-3 d-flex justify-content-center"><Link to={`/${currentUser.email}/createAlbum`}>Add your first album</Link></h2>
+			}
+
+			{
 				loading
 					? (<BarLoader color={"purple"} size={15} />)
 					: (

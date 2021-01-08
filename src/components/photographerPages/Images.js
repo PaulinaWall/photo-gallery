@@ -12,7 +12,6 @@ const Images = ({ images }) => {
 	const { albumId } = useParams();
 	const { currentUser } = useAuth();
 	const [customerUrl, setCustomerUrl] = useState(false);
-	const [showCustomerUrl, setShowCustomerUrl] = useState(false);
 	const [albumTitle, setAlbumTitle] = useState('');
 	const [show, setShow] = useState(false);
 	const [error, setError] = useState();
@@ -24,10 +23,9 @@ const Images = ({ images }) => {
 
 	const handleCheckOnClick = async (index) => {
 		try{
-			await db.collection('images').doc(images[index].id).set({
-				...images[index],
+			await db.collection('images').doc(images[index].id).update({
 				checked: !images[index].checked,
-			});
+			})
 		} catch(e) {
 			setError(e.message);
 		}
@@ -38,15 +36,16 @@ const Images = ({ images }) => {
 			await db.collection('albums').add({
 				albumTitle: albumId,
 				owner: currentUser.uid,
-			});
+			})
+			.then((docRef) => {
+				setCustomerUrl(`http://localhost:3000/review/${docRef.id}`);
+			})
 		} catch (e) {
 			setError(e.message);
 		}
 	}
 
 	const handleCreateCustomerGallery = () => {
-		setCustomerUrl(`http://localhost:3000/review/${albumId}`);
-		setShowCustomerUrl(true);
 		const checkedImages = filterCheckedImages();
 		createNewAlbum(checkedImages);
 	};
@@ -93,7 +92,7 @@ const Images = ({ images }) => {
 			</SRLWrapper>
 			<div className="mb-3 d-flex flex-column">
 				{
-					showCustomerUrl 
+					customerUrl 
 					? <p className="ml-auto mb-2">{customerUrl}</p>
 					: <Button className="ml-auto mb-2" onClick={handleCreateCustomerGallery}>Create gallery for customer</Button>
 				}

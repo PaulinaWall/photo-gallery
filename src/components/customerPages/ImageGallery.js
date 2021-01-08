@@ -28,7 +28,7 @@ const ImageGallery = () => {
 			await db.collection('albums').add({
 				albumTitle: title,
 				owner: currentUser.uid,
-			});
+			})
 		} catch (e) {
 			setError(e.message);
 		}
@@ -36,8 +36,7 @@ const ImageGallery = () => {
 
 	const handleLikeOnClick = async (index) => {
 		try{
-			await db.collection('images').doc(images[index].id).set({
-				...images[index],
+			await db.collection('images').doc(images[index].id).update({
 				liked: !images[index].liked,
 			});
 		} catch(e) {
@@ -47,7 +46,7 @@ const ImageGallery = () => {
 
 	const handleSaveOnClick = () => {
 		const likedImages = filterLikedImages();
-		createNewAlbum(likedImages, `Customer album ${albumId}`);
+		createNewAlbum(likedImages, `Customer album from ${albumId}`);
 		setMsg('Thanks for choosing your favorites!');
 		setShowModal(true);
 	};
