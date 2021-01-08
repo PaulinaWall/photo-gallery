@@ -1,42 +1,43 @@
-import React, { useState, useContext } from 'react';
-import { Row, Col, Card, Button, Container, Modal, Form } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Row, Col, Card, Button, Container, Modal, Form, Alert } from 'react-bootstrap';
 import { SRLWrapper } from 'simple-react-lightbox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { useParams } from 'react-router-dom';
-import { uid } from 'uid';
 
-import { useCustomerFunctions } from '../../contexts/CustomerContext';
+import { db } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
-// import { DataContext } from '../../contexts/DataContext';
 
 const Images = ({ images }) => {
 	const { albumId } = useParams();
-	// const { checked, createCustomerAlbum } = useCustomerFunctions();
-	// const { checkImages } = useContext(DataContext);
 	const { currentUser } = useAuth();
 	const [customerUrl, setCustomerUrl] = useState(false);
 	const [showCustomerUrl, setShowCustomerUrl] = useState(false);
 	const [albumTitle, setAlbumTitle] = useState('');
 	const [show, setShow] = useState(false);
-	// const [newImages, setNewImages] = useState([]);
+	const [error, setError] = useState();
 
 	const filterCheckedImages = () => {
-		// const checkedImages = images.filter((image) => image.checked === true);
-		// return checkedImages;
+		const checkedImages = images.filter((image) => image.checked === true);
+		return checkedImages;
 	};
 
-	const handleCheckOnClick = (index) => {
-		// checked(albumId, index, currentUser);
-		// setNewImages(checkImages(index, images))
+	const handleCheckOnClick = async (index) => {
+		try{
+			await db.collection('images').doc(images[index].id).set({
+				...images[index],
+				checked: !images[index].checked,
+			});
+		} catch(e) {
+			setError(e.message);
+		}
 	};
 
 	const handleCreateCustomerGallery = () => {
-		// const randomId = uid(10);
-		// setCustomerUrl(`http://localhost:3000/customer/${randomId}`);
-		// setShowCustomerUrl(true);
-		// const checkedImages = filterCheckedImages();
-		// createCustomerAlbum(checkedImages, randomId);
+		setCustomerUrl(`http://localhost:3000/customer/${albumId}`);
+		setShowCustomerUrl(true);
+		const checkedImages = filterCheckedImages();
+		// create new album of checked images
 	};
 
 	const handleCreateNewAlbumOnClick = () => {
@@ -44,14 +45,17 @@ const Images = ({ images }) => {
 	};
 
 	const handleSaveNewAlbum = () => {
-		// const checkedImages = filterCheckedImages();
-		// createCustomerAlbum(checkedImages, albumTitle);
+		const checkedImages = filterCheckedImages();
+		// create new album of checked images with owner
 	};
 
 	return (
 		<Container>
 			<SRLWrapper>
 				<Row className="my-3">
+					{
+						error && <Alert variant="danger">{error}</Alert>
+					}
 					{
 						images.map((image, index) => {
 						return	<Col sm={6} md={4} lg={3} key={index}>
