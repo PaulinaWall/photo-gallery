@@ -7,7 +7,7 @@ const LandingPage = () => {
 	return ( 
 		<>
 			<div className="d-flex justify-content-center">
-				<Image className="landingPage-image" src={polaroid1276996_1920} fluid />
+				<Image className="jumbotron-image" src={polaroid1276996_1920} fluid />
 			</div>
 			<Container className="landingPage d-flex flex-column align-items-center">
 				<h1 className="mt-5">Photo-gallery</h1>

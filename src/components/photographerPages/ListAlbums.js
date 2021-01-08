@@ -1,8 +1,10 @@
 import React, {useState} from 'react';
 import { Container, Card, Row, Col, Button, Modal, Form } from 'react-bootstrap';
+import Image from 'react-bootstrap/Image';
 import { Link } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 
+import polaroid1276996_1920 from '../../assets/images/polaroid-1276996_1920.jpg'
 import useGetPhotographerGallery from '../../hooks/useGetPhotographerGallery';
 import { useAuth } from '../../contexts/AuthContext';
 import { db } from '../../firebase';
@@ -38,8 +40,10 @@ const ListAlbums = () => {
 	}
 
 	return (
-		<Container className="mt-3">
-			<h1>Your Albums</h1>
+		<Container className="mt-3 mb-4">
+			<div className="d-flex justify-content-center">
+				<Image className="jumbotron-image" src={polaroid1276996_1920} fluid />
+			</div>
 			{
 				loading
 					? (<BarLoader color={"purple"} size={15} />)
@@ -48,12 +52,14 @@ const ListAlbums = () => {
 							{
 								gallery.albums.map((album, index) => (
 									<Col className="mt-3" sm={12} md={4} lg={4} key={index}>
-										<Card>
-											<Card.Body>
+										<Card className="album-card">
+											<Card.Body className="pb-0">
 												<Card.Title>
-													<Link to={`/${currentUser.email}/${index}`}>
-														{album.albumTitle}
-													</Link>
+													<div className="album-links">
+														<Link className="mb-3" to={`/${currentUser.email}/${index}`}>
+															{album.albumTitle}
+														</Link>
+													</div>
 												</Card.Title>
 											</Card.Body>
 											<Button onClick={() => handleShow(index)}>Change Album Title</Button>
@@ -67,7 +73,7 @@ const ListAlbums = () => {
 					)
 			}
 
-			<Modal show={show} onHide={handleClose}>
+			<Modal show={show} onHide={handleClose} animation={false}>
 				<Modal.Header closeButton>
 				<Modal.Title>Change album title </Modal.Title>
 				</Modal.Header>
