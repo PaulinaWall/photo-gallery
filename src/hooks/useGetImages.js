@@ -1,21 +1,32 @@
 import { useEffect, useState } from 'react';
-
-import useGetPhotographerGallery from '../hooks/useGetPhotographerGallery';
 import { db } from '../firebase';
 
-const useGetImages = (customerId) => {
+const useGetImages = (albumId) => {
 	const [loading, setLoading] = useState(true);
 	const [images, setImages] = useState();
-	const { gallery } = useGetPhotographerGallery();
 
 	useEffect(() => {
-		db.collection('galleries').doc(gallery?.id).get()
-		.then(doc => {
-			const album = doc.data()?.albums?.find((album) => album.albumTitle === customerId);
-			setImages(album?.images);
-			setLoading(false);
-		})
-	}, [customerId, gallery])
+		const unsubscribe = db.collection('images')
+			.where('album', '==', db.collection('albums').doc(albumId))
+			.orderBy("name")
+			.onSnapshot(snapshot => {
+				setLoading(true);
+				const imgs = [];
+
+				snapshot.forEach(doc => {
+					imgs.push({
+						id: doc.id,
+						...doc.data(),
+					});
+				});
+
+				setImages(imgs);
+				setLoading(false);
+			});
+
+		return unsubscribe;
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [albumId]);
 
 	return {images, loading}
 }

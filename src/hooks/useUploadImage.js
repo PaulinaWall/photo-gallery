@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 
 import { db, storage } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
-import useGetPhotographerGallery from '../hooks/useGetPhotographerGallery';
 
 const useUploadImage = (image, albumId = null) => {
 	const [uploadProgress, setUploadProgress] = useState(null);
@@ -10,7 +9,6 @@ const useUploadImage = (image, albumId = null) => {
 	const [error, setError] = useState(null);
 	const [isSuccess, setIsSuccess] = useState(false);
 	const { currentUser } = useAuth();
-	const { gallery } = useGetPhotographerGallery();
 
 	useEffect(() => {
 		if (!image) {
@@ -18,7 +16,6 @@ const useUploadImage = (image, albumId = null) => {
 			setUploadedImage(null);
 			setError(null);
 			setIsSuccess(false);
-
 			return;
 		}
 
@@ -48,23 +45,11 @@ const useUploadImage = (image, albumId = null) => {
 				url,
 			};
 
-			await db.collection('galleries').doc(gallery.id).get()
-			.then((snapshot) => {
-				const albums = snapshot.data().albums;
-				const album = snapshot.data().albums[albumId];
-				album.images.push(img);
-				albums[albumId] = album;
-				db.collection('galleries').doc(gallery.id).set({
-					owner: currentUser.uid,
-					albums
-				})
-				.then(() => {
-					console.log('updated images');
-				})
-				.catch((e) => {
-					setError(e.message);
-				});
-			})
+			if (albumId) {
+				img.album = db.collection('albums').doc(albumId)
+			}
+
+			await db.collection('images').add(img)
 
 			setIsSuccess(true);
 			setUploadProgress(null);
@@ -72,8 +57,8 @@ const useUploadImage = (image, albumId = null) => {
 			setUploadedImage(img);
 			setIsSuccess(true);
 
-		}).catch(error => {
-			setError(error);
+		}).catch((e) => {
+			setError(e.code);
 		});
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [image, currentUser]);

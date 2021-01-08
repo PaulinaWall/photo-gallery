@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Row, Col, Card, Button, Container, Modal, Form } from 'react-bootstrap';
 import { SRLWrapper } from 'simple-react-lightbox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,31 +8,35 @@ import { uid } from 'uid';
 
 import { useCustomerFunctions } from '../../contexts/CustomerContext';
 import { useAuth } from '../../contexts/AuthContext';
+// import { DataContext } from '../../contexts/DataContext';
 
 const Images = ({ images }) => {
 	const { albumId } = useParams();
-	const { checked, createCustomerAlbum } = useCustomerFunctions();
+	// const { checked, createCustomerAlbum } = useCustomerFunctions();
+	// const { checkImages } = useContext(DataContext);
 	const { currentUser } = useAuth();
 	const [customerUrl, setCustomerUrl] = useState(false);
 	const [showCustomerUrl, setShowCustomerUrl] = useState(false);
 	const [albumTitle, setAlbumTitle] = useState('');
 	const [show, setShow] = useState(false);
+	// const [newImages, setNewImages] = useState([]);
 
 	const filterCheckedImages = () => {
-		const checkedImages = images.filter((image) => image.checked === true);
-		return checkedImages;
+		// const checkedImages = images.filter((image) => image.checked === true);
+		// return checkedImages;
 	};
 
 	const handleCheckOnClick = (index) => {
-		checked(albumId, index, currentUser);
+		// checked(albumId, index, currentUser);
+		// setNewImages(checkImages(index, images))
 	};
 
 	const handleCreateCustomerGallery = () => {
-		const randomId = uid(10);
-		setCustomerUrl(`http://localhost:3000/customer/${randomId}`);
-		setShowCustomerUrl(true);
-		const checkedImages = filterCheckedImages();
-		createCustomerAlbum(checkedImages, randomId);
+		// const randomId = uid(10);
+		// setCustomerUrl(`http://localhost:3000/customer/${randomId}`);
+		// setShowCustomerUrl(true);
+		// const checkedImages = filterCheckedImages();
+		// createCustomerAlbum(checkedImages, randomId);
 	};
 
 	const handleCreateNewAlbumOnClick = () => {
@@ -40,51 +44,46 @@ const Images = ({ images }) => {
 	};
 
 	const handleSaveNewAlbum = () => {
-		const checkedImages = filterCheckedImages();
-		createCustomerAlbum(checkedImages, albumTitle);
+		// const checkedImages = filterCheckedImages();
+		// createCustomerAlbum(checkedImages, albumTitle);
 	};
 
-	console.log(customerUrl)
 	return (
 		<Container>
 			<SRLWrapper>
 				<Row className="my-3">
 					{
-						images && (
-							<>
-								{images.map((image, index) => {
-								return	<Col sm={6} md={4} lg={3} key={index}>
-										<Card className="mb-3">
-											<Card.Header>
-												<FontAwesomeIcon
-													className={image.checked ? 'checkedIcon' : 'unCheckedIcon'} 
-													icon={faCheck} 
-													onClick={() => handleCheckOnClick(index)}
-												/>
-											</Card.Header>
-											<a href={image.url} title="View image in lightbox" data-attribute="SRL">
-												<Card.Img variant="top" src={image.url} title={image.name} />
-											</a>
-											<Card.Body>
-												<Card.Text className="text-muted small">
-													{image.name} ({Math.round(image.size/1024)} kb)
-												</Card.Text>
-											</Card.Body>
-										</Card>
-									</Col>
-								})}
-							</>
-						)
-					}
+						images.map((image, index) => {
+						return	<Col sm={6} md={4} lg={3} key={index}>
+								<Card className="mb-3">
+									<Card.Header>
+										<FontAwesomeIcon
+											className={image.checked ? 'checkedIcon' : 'unCheckedIcon'} 
+											icon={faCheck} 
+											onClick={() => handleCheckOnClick(index)}
+										/>
+									</Card.Header>
+									<a href={image.url} title="View image in lightbox" data-attribute="SRL">
+										<Card.Img variant="top" src={image.url} title={image.name} />
+									</a>
+									<Card.Body>
+										<Card.Text className="text-muted small">
+											{image.name} ({Math.round(image.size/1024)} kb)
+										</Card.Text>
+									</Card.Body>
+								</Card>
+							</Col>
+						})}
 				</Row>
 			</SRLWrapper>
-			<div className="d-flex flex-column">
+			<div className="mb-3 d-flex flex-column">
 				<Button className="ml-auto mb-2" onClick={handleCreateCustomerGallery}>Create gallery for customer</Button>
 				
 
 				<Button onClick={handleCreateNewAlbumOnClick} className="ml-auto">Create new album with marked images</Button>
 			</div>
 			<Modal
+				animation={false}
 				size="sm"
 				show={showCustomerUrl}
 				aria-labelledby="example-modal-sizes-title-sm"
@@ -97,7 +96,7 @@ const Images = ({ images }) => {
 				</Modal.Header>
 			</Modal>
 
-			<Modal show={show} onHide={() => setShow(false)}>
+			<Modal show={show} animation={false} onHide={() => setShow(false)}>
 				<Modal.Header closeButton>
 				<Modal.Title>Add album title</Modal.Title>
 				</Modal.Header>
