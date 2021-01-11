@@ -6,16 +6,16 @@ import { useDropzone } from 'react-dropzone';
 import useUploadImage from '../../hooks/useUploadImage';
 
 const UploadImages = ({ albumId }) => {
-	const [uploadImage, setUploadImage] = useState(null);
+	const [uploadImages, setUploadImages] = useState([]);
 	const [message, setMessage] = useState(null);
-	const { uploadProgress, error, isSuccess } = useUploadImage(uploadImage, albumId);
+	const { uploadProgress, error, isSuccess } = useUploadImage(uploadImages, albumId);
 
 	useEffect(() => {
 		if (error) {
 			setMessage(error.msg);
 		} else if (isSuccess) {
 			setMessage('Image successfully uploaded!');
-			setUploadImage(null);
+			setUploadImages([]);
 		} else {
 			setMessage(null);
 		}
@@ -28,7 +28,7 @@ const UploadImages = ({ albumId }) => {
 			return;
 		}
 
-		setUploadImage(acceptedFiles[0]);
+		setUploadImages(acceptedFiles);
 	}, []);
 
 	const { getRootProps, getInputProps, isDragActive, acceptedFiles, isDragAccept, isDragReject } = useDropzone({
