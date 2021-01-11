@@ -51,7 +51,7 @@ const Images = ({ images, album }) => {
 				images: checkedImages,
 			})
 			.then((docRef) => {
-				setCustomerUrl(`http://localhost:3000/review/${docRef.id}`);
+				setCustomerUrl(`${window.location.origin}/review/${docRef.id}`);
 			})
 		} catch (e) {
 			setError(e.message);
