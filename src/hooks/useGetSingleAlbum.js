@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 import { db } from '../firebase';
 
-const useAlbum = (albumId) => {
+const useGetSingleAlbum = (albumId) => {
 	const [album, setAlbum] = useState();
+	const [loadingAlbum, setLoadingAlbum] = useState(true);
 
 	useEffect(() => {
-		db.collection('albums').doc(albumId).get().then(doc => {
-			setAlbum({
-				id: doc.id,
-				...doc.data(),
-			})
+		const unsubscribe = db.collection('albums').doc(albumId).onSnapshot(snapshot => {
+			setLoadingAlbum(true)
+			setAlbum(snapshot.data());
+			setLoadingAlbum(false)
 		})
+
+		return unsubscribe;
 	}, [albumId])
 
-	return { album };
+	return { album, loadingAlbum };
 }
 
-export default useAlbum;
+export default useGetSingleAlbum;

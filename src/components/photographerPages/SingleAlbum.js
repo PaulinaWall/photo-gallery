@@ -10,21 +10,34 @@ import useGetImages from '../../hooks/useGetImages';
 
 const SingleAlbum = () => {
 	const { albumId } = useParams();
-	const { album } = useGetSingleAlbum(albumId);
+	const { album, loadingAlbum } = useGetSingleAlbum(albumId);
 	const { images, loading } = useGetImages(albumId);
 
 	return (
 		<Container>
-			<h2 className="mb-3">Album: {album && album.albumTitle}</h2>
+			{
+				loadingAlbum 
+				? <BarLoader color={"purple"} size={15} />
+				: <>
+					<h2 className="mb-3">Album: {album && album.albumTitle}</h2>
 
-			<UploadImages albumId={albumId} />
+					{
+						!album.fromCustomer && 
+							<UploadImages albumId={albumId} />
+					}
 
-			<hr />
+					<hr />
 
-			{loading
-				? (<div className="d-flex justify-content-center 		my-5"><BarLoader color={"#888"} size={100} /></div>)
-				: (<Images images={images} />)
+					{loading
+						? (<div className="d-flex justify-content-center 		my-5"><BarLoader color={"#888"} size={100} /></div>)
+						: (<Images 
+							images={images} 
+							album={album}	
+						/>)
+					}
+				</>
 			}
+			
 		</Container>
 	)
 }
