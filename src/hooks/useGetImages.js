@@ -6,26 +6,15 @@ const useGetImages = (albumId) => {
 	const [images, setImages] = useState();
 
 	useEffect(() => {
-		const unsubscribe = db.collection('images')
-			.where('album', '==', db.collection('albums').doc(albumId))
-			.orderBy("name")
-			.onSnapshot(snapshot => {
+		const unsubscribe = db.collection('albums')
+			.doc(albumId)
+			.onSnapshot(doc => {
 				setLoading(true);
-				const imgs = [];
 
-				snapshot.forEach(doc => {
-					imgs.push({
-						id: doc.id,
-						...doc.data(),
-					});
-				});
-
-				setImages(imgs);
+				setImages(doc.data().images);
 				setLoading(false);
 			});
-
-		return unsubscribe;
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+			return unsubscribe;
 	}, [albumId]);
 
 	return {images, loading}

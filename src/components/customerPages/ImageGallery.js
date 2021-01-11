@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 import { SRLWrapper } from 'simple-react-lightbox';
-import { Row, Col, Card, Container, Button, Modal, Alert } from 'react-bootstrap';
+import { Row, Col, Card, Container, Button, Modal, Alert, Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 
@@ -17,17 +17,25 @@ const ImageGallery = () => {
 	const [msg, setMsg] = useState(null);
 	const [error, setError] = useState();
 	const [showModal, setShowModal] = useState(false)
+	const [show, setShow] = useState(false);
+	const [customerName, setCustomerName] = useState('');
+
+	const handleAddName = () => {
+		setShow(true); 
+	}
 
 	const filterLikedImages = () => {
 		const likedImages = images.filter((image) => image.liked === true);
 		return likedImages;
 	};
 
-	const createNewAlbum = async (images, title) => {
+	const createNewAlbum = async (likedImages) => {
 		try{
 			await db.collection('albums').add({
-				albumTitle: title,
+				fromCustomer: true,
+				albumTitle: customerName,
 				owner: currentUser.uid,
+				images: likedImages,
 			})
 		} catch (e) {
 			setError(e.message);
@@ -36,8 +44,15 @@ const ImageGallery = () => {
 
 	const handleLikeOnClick = async (index) => {
 		try{
-			await db.collection('images').doc(images[index].id).update({
-				liked: !images[index].liked,
+			await db.collection('albums').doc(albumId).get().then((doc) => {
+				const images = doc.data().images;
+				const image = doc.data().images[index];
+				image.liked = !image.liked;
+				images[index] = image;
+				db.collection('albums').doc(albumId).set({
+					...doc.data(),
+					images,
+				});
 			});
 		} catch(e) {
 			setError(e.message);
@@ -45,8 +60,9 @@ const ImageGallery = () => {
 	};
 
 	const handleSaveOnClick = () => {
+		setShow(false);
 		const likedImages = filterLikedImages();
-		createNewAlbum(likedImages, `Customer album from ${albumId}`);
+		createNewAlbum(likedImages);
 		setMsg('Thanks for choosing your favorites!');
 		setShowModal(true);
 	};
@@ -83,7 +99,7 @@ const ImageGallery = () => {
 			<div className="d-flex">
 				{
 					!msg
-					? 	<Button onClick={handleSaveOnClick} className="ml-auto 			m-3">Send choosen pictures to photographer
+					? 	<Button onClick={handleAddName} className="ml-auto m-3">Add your name and send pictures to photographer.
 						</Button>
 					:   <Modal
 							animation={false}
@@ -100,6 +116,30 @@ const ImageGallery = () => {
 						</Modal>
 				}
 			</div>
+			<Modal show={show} onHide={() => setShow(false)} animation={false}>
+				<Modal.Header closeButton>
+				<Modal.Title>Add Your Name</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<Form>
+						<Form.Control
+							type="album-title"
+							onChange={(e) => setCustomerName(e.target.value)}
+							value={customerName}
+							placeholder={customerName}
+							required
+						/>
+					</Form>
+				</Modal.Body>
+				<Modal.Footer>
+				<Button variant="secondary" onClick={() => setShow(false)}>
+					Close
+				</Button>
+				<Button variant="primary" onClick={handleSaveOnClick}>
+					Save Name and send pictures
+				</Button>
+				</Modal.Footer>
+			</Modal>
 		</Container>
 	)
 }

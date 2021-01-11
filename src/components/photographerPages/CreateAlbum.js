@@ -24,6 +24,8 @@ const CreateAlbum = () => {
 			await db.collection('albums').add({
 				albumTitle,
 				owner: currentUser.uid,
+				images: [],
+				fromCustomer: false,
 			});
 
 			navigate(`/${currentUser.email}/listAlbums`);
