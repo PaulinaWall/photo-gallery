@@ -26,7 +26,7 @@ const ListAlbums = () => {
 
 	const handleSave = async () => {
 		try {
-			await db.collection('albums').doc(albums[index].id).set({
+			await db.collection('albums').doc(albums[index].id).update({
 				albumTitle,
 				owner: currentUser.uid,
 			})
