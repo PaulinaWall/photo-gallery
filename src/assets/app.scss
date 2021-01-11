@@ -34,12 +34,23 @@ a{
 	overflow: hidden;
 }
 
+.album-links{
+	background-color: rgb(22, 22, 22);
+	border-radius: 3px 3px !important;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	padding: 30px;
+}
+
 .card-title{
 	height: 100%;
 }
 
 .checkedIcon{
 	color: green;
+	cursor: pointer;
 }
 
 .create-image{
@@ -53,17 +64,16 @@ a{
    justify-content: center;
 }
 
-.likedIcon{
-	color: red;
+.delete-icon{
+	&:hover{
+		color: rgb(90, 88, 88);
+		cursor: pointer;
+	}
 }
 
-.album-links{
-	background-color: rgb(22, 22, 22);
-	border-radius: 3px 3px !important;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 30px;
+.likedIcon{
+	color: red;
+	cursor: pointer;
 }
 
 .jumbotron-image{
@@ -84,8 +94,10 @@ a{
 
 .unLikedIcon{
 	color: lightgray;
+	cursor: pointer;
 }
 
 .unCheckedIcon{
 	color: lightgray;
+	cursor: pointer;
 }
