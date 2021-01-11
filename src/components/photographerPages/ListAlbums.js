@@ -45,12 +45,11 @@ const ListAlbums = () => {
 			<div className="d-flex justify-content-center">
 				<Image className="jumbotron-image" src={polaroid1276996_1920} fluid />
 			</div>
-			{
-				albums.length < 1 && <h2 className="mt-3 d-flex justify-content-center"><Link to={`/${currentUser.email}/createAlbum`}>Add your first album</Link></h2>
-			}
 
 			{
-				loading
+				(albums.length < 1)
+				? <h2 className="mt-3 d-flex justify-content-center"><Link to={`/${currentUser.email}/createAlbum`}>Add your first album</Link></h2>
+				: loading
 					? (<BarLoader color={"purple"} size={15} />)
 					: (
 						<Row>
@@ -62,6 +61,10 @@ const ListAlbums = () => {
 												<Card.Body className="pb-0">
 													<Card.Title className="card-title">
 														<div className="card-title album-links">
+															{
+																album.fromCustomer && 
+																	<p>Customer Album:</p>
+															}
 															<Link className="mb-3 albumList-links" to={`/${currentUser.email}/${album.id}`}>
 																{album.albumTitle}
 															</Link>
