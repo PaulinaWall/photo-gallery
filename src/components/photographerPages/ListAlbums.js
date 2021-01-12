@@ -16,10 +16,12 @@ const ListAlbums = () => {
 	const { currentUser } = useAuth();
 	const [index, setIndex] = useState();
 	const [show, setShow] = useState(false);
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [albumTitle, setAlbumTitle] = useState('');
 	const [error, setError] = useState(false);
 	const { albums, loading } = useGetAlbums();
-	useDeleteAlbum(index);
+	const [albumToDelete, setAlbumToDelete] = useState(false);
+	useDeleteAlbum(albumToDelete);
 
 	const handleClose = () => setShow(false);
 
@@ -41,8 +43,13 @@ const ListAlbums = () => {
 		setShow(false);
 	}
 
-	const handleOnDelete = (index) => {
-		setIndex(index);
+	const handleOnDelete = () => {
+		setShowDeleteModal(false)
+	};
+	
+	const handleDeleteOnClick = (index) => {
+		setAlbumToDelete(albums[index]) 
+		setShowDeleteModal(true);
 	}
 
 	return (
@@ -70,7 +77,7 @@ const ListAlbums = () => {
 													<FontAwesomeIcon
 														className="delete-icon"
 														icon={faTimes} 
-														onClick={() => handleOnDelete(index)}
+														onClick={() => handleDeleteOnClick(index)}
 													/>
 												</div>
 												<Card.Body className="pb-0 pt-0">
@@ -117,6 +124,20 @@ const ListAlbums = () => {
 				</Button>
 				<Button variant="primary" onClick={() => handleSave()}>
 					Save Changes
+				</Button>
+				</Modal.Footer>
+			</Modal>
+
+			<Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} animation={false}>
+				<Modal.Header closeButton>
+				<Modal.Title>Are you sure you want to delete your album {albumToDelete.albumTitle}?</Modal.Title>
+				</Modal.Header>
+				<Modal.Footer className="justify-content-between">
+				<Button className="pl-4 pr-4" variant="secondary" onClick={() => setShowDeleteModal(false)}>
+					No
+				</Button>
+				<Button className="pl-4 pr-4" variant="primary" onClick={handleOnDelete}>
+					Yes
 				</Button>
 				</Modal.Footer>
 			</Modal>
