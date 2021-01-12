@@ -1,46 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { BarLoader } from 'react-spinners';
+import { BarLoader, CircleLoader } from 'react-spinners';
 import { SRLWrapper } from 'simple-react-lightbox';
 import { Row, Col, Card, Container, Button, Modal, Alert, Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 
 import useGetImages from '../../hooks/useGetImages';
+import useGetSingleAlbum from '../../hooks/useGetSingleAlbum';
 import { db } from '../../firebase';
-import { useAuth } from '../../contexts/AuthContext';
 
 const ImageGallery = () => {
 	const { albumId } = useParams();
-	const { currentUser } = useAuth();
 	const { images, loading } = useGetImages(albumId);
+	const { album } = useGetSingleAlbum(albumId);
 	const [msg, setMsg] = useState(null);
 	const [error, setError] = useState();
 	const [showModal, setShowModal] = useState(false)
-	const [show, setShow] = useState(false);
-	const [customerName, setCustomerName] = useState('');
+	const numberOfLikes = useRef(0);
 
-	const handleAddName = () => {
-		setShow(true); 
-	}
+	useEffect(() => {
+		let likes = 0;
+		images?.forEach((image) => {
+			if(image.liked){
+				likes ++;
+			}
+		})
+		numberOfLikes.current = likes;
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
 
 	const filterLikedImages = () => {
 		const likedImages = images.filter((image) => image.liked === true);
+		likedImages.forEach((image) => {
+			image.liked = false;
+		})
 		return likedImages;
 	};
 
 	const createNewAlbum = async (likedImages) => {
 		try{
 			await db.collection('albums').add({
+				owner: album.owner,
 				fromCustomer: true,
-				albumTitle: customerName,
-				owner: currentUser.uid,
+				albumTitle: album.albumTitle,
 				images: likedImages,
 			})
 		} catch (e) {
 			setError(e.message);
 		}
 	}
+
+	const countNumberOfLikes = (image) => {
+		if(image === true){
+			numberOfLikes.current ++;
+		} else {
+			if(numberOfLikes.current === 0){
+				return;
+			}
+			numberOfLikes.current --;
+		}
+	};
 
 	const handleLikeOnClick = async (index) => {
 		try{
@@ -53,6 +73,7 @@ const ImageGallery = () => {
 					...doc.data(),
 					images,
 				});
+				countNumberOfLikes(image.liked);
 			});
 		} catch(e) {
 			setError(e.message);
@@ -60,13 +81,12 @@ const ImageGallery = () => {
 	};
 
 	const handleSaveOnClick = () => {
-		setShow(false);
 		const likedImages = filterLikedImages();
 		createNewAlbum(likedImages);
 		setMsg('Thanks for choosing your favorites!');
 		setShowModal(true);
 	};
-	
+
 	return(
 		<Container>
 			{
@@ -96,10 +116,13 @@ const ImageGallery = () => {
 					}
 				</Row>
 			</SRLWrapper>
-			<div className="d-flex">
+			<div className="m-5">
+				{
+					<p>You liked: {numberOfLikes.current} pictures of {images?.length}!</p>
+				}
 				{
 					!msg
-					? 	<Button onClick={handleAddName} className="ml-auto m-3">Add your name and send pictures to photographer.
+					? 	<Button onClick={handleSaveOnClick}>Send pictures to photographer.
 						</Button>
 					:   <Modal
 							animation={false}
@@ -116,30 +139,6 @@ const ImageGallery = () => {
 						</Modal>
 				}
 			</div>
-			<Modal show={show} onHide={() => setShow(false)} animation={false}>
-				<Modal.Header closeButton>
-				<Modal.Title>Add Your Name</Modal.Title>
-				</Modal.Header>
-				<Modal.Body>
-					<Form>
-						<Form.Control
-							type="album-title"
-							onChange={(e) => setCustomerName(e.target.value)}
-							value={customerName}
-							placeholder={customerName}
-							required
-						/>
-					</Form>
-				</Modal.Body>
-				<Modal.Footer>
-				<Button variant="secondary" onClick={() => setShow(false)}>
-					Close
-				</Button>
-				<Button variant="primary" onClick={handleSaveOnClick}>
-					Save Name and send pictures
-				</Button>
-				</Modal.Footer>
-			</Modal>
 		</Container>
 	)
 }
