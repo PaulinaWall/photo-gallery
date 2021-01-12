@@ -3,21 +3,26 @@ import { Container, Card, Row, Col, Button, Modal, Form, Alert } from 'react-boo
 import Image from 'react-bootstrap/Image';
 import { Link } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
-import polaroid1276996_1920 from '../../assets/images/polaroid-1276996_1920.jpg'
-import useGetAlbums from '../../hooks/useGetAlbums'
+import polaroid1276996_1920 from '../../assets/images/polaroid-1276996_1920.jpg';
+import useGetAlbums from '../../hooks/useGetAlbums';
+import useDeleteAlbum from '../../hooks/useDeleteAlbum';
 import { useAuth } from '../../contexts/AuthContext';
 import { db } from '../../firebase';
 
 const ListAlbums = () => {
-	const [index, setIndex] = useState();
 	const { currentUser } = useAuth();
+	const [index, setIndex] = useState();
 	const [show, setShow] = useState(false);
 	const [albumTitle, setAlbumTitle] = useState('');
-	const { albums, loading } = useGetAlbums();
 	const [error, setError] = useState(false);
+	const { albums, loading } = useGetAlbums();
+	useDeleteAlbum(index);
 
 	const handleClose = () => setShow(false);
+
 	const handleShow = (index, title) => {
 		setShow(true); 
 		setIndex(index); 
@@ -28,13 +33,16 @@ const ListAlbums = () => {
 		try {
 			await db.collection('albums').doc(albums[index].id).update({
 				albumTitle,
-				owner: currentUser.uid,
 			})
 		} catch (e) {
 			setError(e.message);
 		}
 		setAlbumTitle('');
 		setShow(false);
+	}
+
+	const handleOnDelete = (index) => {
+		setIndex(index);
 	}
 
 	return (
@@ -58,14 +66,21 @@ const ListAlbums = () => {
 									(album.owner === currentUser.uid) && (
 										<Col className="mt-3" sm={12} md={4} lg={4} key={index}>
 											<Card className="album-card">
-												<Card.Body className="pb-0">
+												<div className="mb-2 ml-auto pt-2 pr-2">
+													<FontAwesomeIcon
+														className="delete-icon"
+														icon={faTimes} 
+														onClick={() => handleOnDelete(index)}
+													/>
+												</div>
+												<Card.Body className="pb-0 pt-0">
 													<Card.Title className="card-title">
 														<div className="card-title album-links">
-															{
-																album.fromCustomer && 
-																	<p>Customer Album:</p>
-															}
 															<Link className="mb-3 albumList-links" to={`/${currentUser.email}/${album.id}`}>
+																{
+																	album.fromCustomer && 
+																		<p>Customer Album:</p>
+																}
 																{album.albumTitle}
 															</Link>
 														</div>
