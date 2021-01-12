@@ -1,34 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Button, Container, Modal, Form, Alert } from 'react-bootstrap';
 import { SRLWrapper } from 'simple-react-lightbox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 
 import { db } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import useDeleteImage from '../../hooks/useDeleteImage';
 
 const Images = ({ images, album }) => {
+	const navigate = useNavigate()
 	const { albumId } = useParams();
 	const { currentUser } = useAuth();
-	const [customerUrl, setCustomerUrl] = useState(false);
+	const [customerUrl, setCustomerUrl] = useState('');
 	const [albumTitle, setAlbumTitle] = useState('');
 	const [show, setShow] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [error, setError] = useState();
 	const [imageToDelete, setImageToDelete] = useState(null);
+	useDeleteImage(imageToDelete, albumId);
 
-	const {} = useDeleteImage(imageToDelete, albumId);
+	useEffect(() => {
+		setAlbumTitle(album.albumTitle)
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
 
 	const filterCheckedImages = () => {
 		const checkedImages = images.filter((image) => image.checked === true);
+		checkedImages.forEach((image) => {
+			image.checked = false;
+		})
 		return checkedImages;
 	};
 
-	const handleCheckOnClick =  async (index) => {
+	const handleCheckOnClick = (index) => {
 		try{
-			await db.collection('albums').doc(albumId).get().then((doc) => {
+			db.collection('albums').doc(albumId).get().then((doc) => {
 				const images = doc.data().images;
 				const image = doc.data().images[index];
 				image.checked = !image.checked;
@@ -43,32 +51,47 @@ const Images = ({ images, album }) => {
 		}
 	};
 
-	const createNewAlbum = async (checkedImages) => {
+	const handleSaveNewAlbum = () => {
+		const checkedImages = filterCheckedImages();
 		try{
-			await db.collection('albums').add({
+			db.collection('albums').add({
 				albumTitle,
+				fromCustomer: false,
 				owner: currentUser.uid,
 				images: checkedImages,
 			})
 			.then((docRef) => {
-				setCustomerUrl(`${window.location.origin}/review/${docRef.id}`);
+				navigate(`/${currentUser.email}/${docRef.id}`);
+				setShow(false);
 			})
 		} catch (e) {
 			setError(e.message);
 		}
-	}
-
-	const handleSaveNewAlbum = () => {
+	};
+	
+	const handleCreateCustomerOnClick = () => {
 		const checkedImages = filterCheckedImages();
-		createNewAlbum(checkedImages);
-		setShowModal(true);
-		setShow(false);
+		try{
+			db.collection('albums').doc(albumId).set({
+				albumTitle,
+				fromCustomer: false,
+				owner: currentUser.uid,
+				images: checkedImages,
+			})
+			.then(() => {
+				setCustomerUrl(`${window.location.origin}/review/${albumId}`);
+				setShowModal(true);
+			})
+			
+		} catch (e) {
+			setError(e.message);
+		}
 	};
 
-	const handleOnDelete = async (index) => {
+	const handleOnDelete = (index) => {
 		setImageToDelete(index);
-	}
-
+	};
+ 
 	return (
 		<Container>
 			<SRLWrapper>
@@ -77,7 +100,8 @@ const Images = ({ images, album }) => {
 						error && <Alert variant="danger">{error}</Alert>
 					}
 					{
-						images && images.map((image, index) => {
+					images && images.map((image, index) => {
+						
 						return	<Col sm={6} md={4} lg={3} key={index}>
 								<Card className="mb-3">
 									
@@ -117,7 +141,8 @@ const Images = ({ images, album }) => {
 					!album.fromCustomer
 						? 
 							<>
-								<Button className="ml-auto mb-2" onClick={() => setShow(true)}>Create gallery for customer</Button>
+								<Button className="ml-auto mb-2" onClick={handleCreateCustomerOnClick}>Create gallery for customer</Button>
+
 								<Button onClick={() => setShow(true)} className="ml-auto">Create new album with marked images</Button>
 							</>
 						: ''
@@ -149,6 +174,7 @@ const Images = ({ images, album }) => {
 				</Button>
 				</Modal.Footer>
 			</Modal>
+
 			<Modal
 				animation={false}
 				size="sm"
@@ -161,7 +187,7 @@ const Images = ({ images, album }) => {
 					Wow good choice, here is the URL!
 				</Modal.Title>
 				</Modal.Header>
-				<Modal.Body>{customerUrl}</Modal.Body>
+				<Modal.Body><Link to={customerUrl}>{customerUrl}</Link></Modal.Body>
 			</Modal>
 		</Container>
 	)
