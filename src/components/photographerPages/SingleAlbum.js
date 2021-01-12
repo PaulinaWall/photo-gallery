@@ -19,14 +19,15 @@ const SingleAlbum = () => {
 				loadingAlbum 
 				? <BarLoader color={"purple"} size={15} />
 				: <>
-					<h2 className="mb-3">Album: {album && album.albumTitle}</h2>
+					<h2 className="m-3">Album: {album && album.albumTitle}</h2>
 
 					{
 						!album.fromCustomer && 
-							<UploadImages albumId={albumId} />
+							<>
+								<UploadImages albumId={albumId} />
+								<hr />
+							</>
 					}
-
-					<hr />
 
 					{loading
 						? (<div className="d-flex justify-content-center 		my-5"><BarLoader color={"#888"} size={100} /></div>)

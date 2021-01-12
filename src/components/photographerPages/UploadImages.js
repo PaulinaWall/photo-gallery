@@ -14,7 +14,7 @@ const UploadImages = ({ albumId }) => {
 		if (error) {
 			setMessage(error.msg);
 		} else if (isSuccess) {
-			setMessage('Image successfully uploaded!');
+			setMessage('Uploaded successfully!');
 			setUploadImages([]);
 		} else {
 			setMessage(null);
