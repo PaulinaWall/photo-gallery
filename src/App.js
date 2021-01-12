@@ -58,11 +58,12 @@ const App = () => {
 							</AuthRoute>
 
 						</Route>
-
-						<Route path="*" element={<NotFound />} />
+						
 						<Route path="/review/:albumId">
 							<ImageGallery />
 						</Route>
+
+						<Route path="*" element={<NotFound />} />
 					</Routes>
 				</SimpleReactLightbox>
 			</AuthContextProvider>
