@@ -80,19 +80,20 @@ const ListAlbums = () => {
 														onClick={() => handleDeleteOnClick(index)}
 													/>
 												</div>
-												<Card.Body className="pb-0 pt-0">
-													<Card.Title className="card-title">
-														<div className="card-title album-links">
-															<Link className="mb-3 albumList-links" to={`/${currentUser.email}/${album.id}`}>
-																{
-																	album.fromCustomer && 
-																		<p>Customer Album:</p>
-																}
-																{album.albumTitle}
-															</Link>
-														</div>
-													</Card.Title>
-												</Card.Body>
+												<Link className="mb-3 albumList-links" to={`/${currentUser.email}/${album.id}`}>
+													<Card.Body className="pb-0 pt-0">
+														<Card.Title className="card-title">
+															<div className="card-title album-links">
+																
+																	{
+																		album.fromCustomer && 
+																			<p>Customer Album:</p>
+																	}
+																	{album.albumTitle}
+															</div>
+														</Card.Title>
+													</Card.Body>
+												</Link>
 												<Button className="m-3" onClick={() => handleShow(index, album.albumTitle)}>Change Album Title</Button>
 											</Card>
 										</Col>
