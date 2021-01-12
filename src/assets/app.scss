@@ -23,6 +23,26 @@ a{
 	}
 }
 
+.add-card{
+	opacity: 0.3;
+}
+
+.add-album-card-title{
+	padding-top: 40px;
+	padding-bottom: 67px;
+}
+
+.add-album-card-title-container{
+	height: 100%;
+	background-color: rgb(22, 22, 22);
+	border-radius: 3px 3px !important;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	padding: 30px;
+}
+
 .album-card{
 	height: 100%;
 	background-color: whitesmoke;

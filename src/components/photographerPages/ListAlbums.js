@@ -4,7 +4,7 @@ import Image from 'react-bootstrap/Image';
 import { Link } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import polaroid1276996_1920 from '../../assets/images/polaroid-1276996_1920.jpg';
 import useGetAlbums from '../../hooks/useGetAlbums';
@@ -99,6 +99,23 @@ const ListAlbums = () => {
 									)
 								))
 							}
+							<Col className="mt-3 add-card" sm={12} md={4} lg={4}>
+								<Card className="album-card">
+									<Card.Body className="pb-0 pt-0">
+										<Link className="mb-3 albumList-links" to={`/${currentUser.email}/createAlbum`}>
+											<Card.Title className="add-album-card-title">
+												<div className="add-album-card-title-container">
+														<FontAwesomeIcon
+															className="add-icon"
+															icon={faPlus} 
+															size="3x"
+														/>
+												</div>
+											</Card.Title>
+										</Link>
+									</Card.Body>
+								</Card>
+							</Col>
 						</Row>
 					)
 			}
