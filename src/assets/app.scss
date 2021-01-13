@@ -84,11 +84,20 @@ a{
    justify-content: center;
 }
 
+.customer-url{
+	font-weight: bold;
+	padding-right: 5px;
+}
+
 .delete-icon{
 	&:hover{
 		color: rgb(90, 88, 88);
 		cursor: pointer;
 	}
+}
+
+.here-link{
+	font-weight: bold;
 }
 
 .likedIcon{

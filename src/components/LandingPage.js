@@ -12,7 +12,7 @@ const LandingPage = () => {
 			</div>
 			<Container className="landingPage d-flex flex-column align-items-center">
 				<h1 className="mt-5">Photo-gallery</h1>
-				<p className="mt-5">Are you a photographer sign in and make a gallery or, register <Link to="/signup">here</Link>!</p>
+				<p className="mt-5">Are you a photographer sign in and make a gallery or, register <Link className="here-link" to="/signup">here</Link>!</p>
 			</Container>
 		</>
 	 );
