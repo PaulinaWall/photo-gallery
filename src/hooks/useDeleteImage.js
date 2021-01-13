@@ -2,9 +2,8 @@ import { useEffect } from 'react';
 import { db, storage } from '../firebase';
 
 const useDeleteImage = (imageIndex, albumId) => {
-
 	useEffect(() => {
-		if (!imageIndex) {
+		if (!imageIndex && imageIndex !== 0) {
 			return;
 		}
 		const unsubscribe = (async () => {
@@ -12,7 +11,6 @@ const useDeleteImage = (imageIndex, albumId) => {
 				const images = doc.data().images;
 				images.splice(imageIndex, 1)
 				const image = doc.data().images[imageIndex];
-
 				db.collection('albums').doc(albumId).set({
 					...doc.data(),
 					images,
