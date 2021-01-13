@@ -16,7 +16,7 @@ const AlbumCard = ({ album, handleDeleteOnClick, currentUser, handleShow }) => {
 			</div>
 			<Link className="mb-3 albumList-links" to={`/${currentUser.email}/${album.id}`}>
 				<Card.Body className="pb-0 pt-0">
-					<Card.Title className="card-title">
+					<Card.Title className="album-card-title">
 						<div className="card-title album-links">
 							
 								{

@@ -33,7 +33,7 @@ const SignUp = () => {
 
 	return ( 
 		<>
-			<Row>
+			<Row className="mt-3">
 				<Col md={{ span: 6, offset: 3 }}>
 					<Card>
 						<Card.Body>
