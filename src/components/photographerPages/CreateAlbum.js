@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase';
 
 import { useAuth } from '../../contexts/AuthContext';
-import useGetPhotographerGallery from '../../hooks/useGetPhotographerGallery';
 import polaroid1276998_1920 from '../../assets/images/polaroid-1276998_1920.jpg'
 
 const CreateAlbum = () => {
@@ -13,7 +12,6 @@ const CreateAlbum = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
 	const { currentUser } = useAuth();
-	const { gallery } = useGetPhotographerGallery();
 	const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
@@ -23,36 +21,14 @@ const CreateAlbum = () => {
 		setLoading(true);
 
 		try{
-			if(gallery.owner === currentUser.uid){
-				await db.collection('galleries')
-				.doc(gallery.id)
-				.get()
-				.then((snapshot) => {
-					const albums = snapshot.data().albums;
-					albums.push({albumTitle, images: []})
+			await db.collection('albums').add({
+				albumTitle,
+				owner: currentUser.uid,
+				images: [],
+				fromCustomer: false,
+			});
 
-					db.collection('galleries').doc(gallery.id).set({
-						albums,
-					}, {merge: true})
-					.then(() => {
-						console.log('Updated albums with success');
-						navigate(`/${currentUser.email}/listAlbums`);
-					})
-					.catch((e) => {
-						setError(e.message);
-					})
-				})
-			}else {
-				await db.collection('galleries').add({
-					owner: currentUser.uid,
-					albums: [{
-						albumTitle,
-						images: [],
-					}]
-				});
-
-				navigate(`/${currentUser.email}/listAlbums`);
-			}
+			navigate(`/${currentUser.email}/listAlbums`);
 
 		} catch (e) {
 			setError(e.message);

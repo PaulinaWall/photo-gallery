@@ -23,14 +23,54 @@ a{
 	}
 }
 
+.add-card{
+	opacity: 0.3;
+}
+
+.add-album-card-title{
+	padding-top: 40px;
+	padding-bottom: 67px;
+}
+
+.add-album-card-title-container{
+	height: 200px;
+	background-color: rgb(22, 22, 22);
+	border-radius: 3px 3px !important;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	padding: 30px;
+}
+
 .album-card{
 	height: 100%;
 	background-color: whitesmoke;
 	box-shadow: 2px 2px 2px gray;
 }
- 
+
+.albumList-links{
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.album-links{
+	background-color: rgb(22, 22, 22);
+	border-radius: 3px 3px !important;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	padding: 30px;
+}
+
+.card-title{
+	height: 200px;
+}
+
 .checkedIcon{
 	color: green;
+	cursor: pointer;
 }
 
 .create-image{
@@ -44,17 +84,25 @@ a{
    justify-content: center;
 }
 
-.likedIcon{
-	color: red;
+.customer-url{
+	font-weight: bold;
+	padding-right: 5px;
 }
 
-.album-links{
-	background-color: rgb(22, 22, 22);
-	border-radius: 3px 3px !important;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 40px;
+.delete-icon{
+	&:hover{
+		color: rgb(90, 88, 88);
+		cursor: pointer;
+	}
+}
+
+.here-link{
+	font-weight: bold;
+}
+
+.likedIcon{
+	color: red;
+	cursor: pointer;
 }
 
 .jumbotron-image{
@@ -75,8 +123,10 @@ a{
 
 .unLikedIcon{
 	color: lightgray;
+	cursor: pointer;
 }
 
 .unCheckedIcon{
 	color: lightgray;
+	cursor: pointer;
 }

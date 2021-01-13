@@ -2,40 +2,72 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 import { SRLWrapper } from 'simple-react-lightbox';
-import { Row, Col, Card, Container, Button, Modal } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { Row, Col, Container, Button, Modal, Alert } from 'react-bootstrap';
 
 import useGetImages from '../../hooks/useGetImages';
-import { useCustomerFunctions } from '../../contexts/CustomerContext';
-import { useAuth } from '../../contexts/AuthContext';
+import useGetSingleAlbum from '../../hooks/useGetSingleAlbum';
+import { db } from '../../firebase';
+import LikedNumber from './LikedNumber';
+import ImageCard from './ImageCard';
 
 const ImageGallery = () => {
-	const { customerId } = useParams();
-	const { liked, createCustomerAlbum } = useCustomerFunctions();
-	const { currentUser } = useAuth();
-	const { images, loading } = useGetImages(customerId);
+	const { albumId } = useParams();
+	const { images, loading } = useGetImages(albumId);
+	const { album } = useGetSingleAlbum(albumId);
 	const [msg, setMsg] = useState(null);
+	const [error, setError] = useState();
 	const [showModal, setShowModal] = useState(false)
 
 	const filterLikedImages = () => {
 		const likedImages = images.filter((image) => image.liked === true);
+		likedImages.forEach((image) => {
+			image.liked = false;
+		})
 		return likedImages;
 	};
 
-	const handleLikeOnClick = (index) => {
-		liked(customerId, index, currentUser);
+	const createNewAlbum = async (likedImages) => {
+		try{
+			await db.collection('albums').add({
+				owner: album.owner,
+				fromCustomer: true,
+				albumTitle: album.albumTitle,
+				images: likedImages,
+			})
+		} catch (e) {
+			setError(e.message);
+		}
+	}
+
+	const handleLikeOnClick = async (index) => {
+		try{
+			await db.collection('albums').doc(albumId).get().then((doc) => {
+				const images = doc.data().images;
+				const image = doc.data().images[index];
+				image.liked = !image.liked;
+				images[index] = image;
+				db.collection('albums').doc(albumId).set({
+					...doc.data(),
+					images,
+				});
+			});
+		} catch(e) {
+			setError(e.message);
+		}
 	};
 
 	const handleSaveOnClick = () => {
 		const likedImages = filterLikedImages();
-		createCustomerAlbum(likedImages, `Album from customer: ${customerId}`);
+		createNewAlbum(likedImages);
 		setMsg('Thanks for choosing your favorites!');
 		setShowModal(true);
 	};
-	
+
 	return(
 		<Container>
+			{
+				error && <Alert variant="danger">{error}</Alert>
+			}
 			{loading && (<div className="d-flex justify-content-center my-5"><BarLoader color={"#888"} size={100} /></div>)}
 			<SRLWrapper>
 				<Row className="mt-3">
@@ -43,29 +75,27 @@ const ImageGallery = () => {
 						images && 
 							images.map((image, index) => (
 								<Col sm={6} md={4} lg={3} key={index}>
-									<Card className="mb-3">
-										<Card.Header>
-											<FontAwesomeIcon
-												className={image.liked ? 'likedIcon' : 'unLikedIcon'} 
-												icon={faHeart} 
-												onClick={() => handleLikeOnClick(index)}
-											/>
-										</Card.Header>
-										<a href={image.url} title="View image in lightbox" data-attribute="SRL">
-											<Card.Img variant="top" src={image.url} title={image.name} />
-										</a>
-									</Card>
+									<ImageCard 
+										image={image} 
+										handleLikeOnClick={() => handleLikeOnClick(index)} 
+									/>
 								</Col>
 							))
 					}
 				</Row>
 			</SRLWrapper>
-			<div className="d-flex">
+			<div className="mt-5 d-flex flex-column align-items-end">
+				{
+					loading 
+						? <div className="d-flex justify-content-center my-5"><BarLoader color={"#888"} size={100}/></div>
+						: <LikedNumber images={images}/>
+				}
 				{
 					!msg
-					? 	<Button onClick={handleSaveOnClick} className="ml-auto 			m-3">Send choosen pictures to photographer
+					? 	<Button onClick={handleSaveOnClick}>Send pictures to photographer.
 						</Button>
 					:   <Modal
+							animation={false}
 							size="sm"
 							show={showModal}
 							aria-labelledby="example-modal-sizes-title-sm"

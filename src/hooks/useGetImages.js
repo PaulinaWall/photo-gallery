@@ -1,21 +1,21 @@
 import { useEffect, useState } from 'react';
-
-import useGetPhotographerGallery from '../hooks/useGetPhotographerGallery';
 import { db } from '../firebase';
 
-const useGetImages = (customerId) => {
+const useGetImages = (albumId) => {
 	const [loading, setLoading] = useState(true);
 	const [images, setImages] = useState();
-	const { gallery } = useGetPhotographerGallery();
 
 	useEffect(() => {
-		db.collection('galleries').doc(gallery?.id).get()
-		.then(doc => {
-			const album = doc.data()?.albums?.find((album) => album.albumTitle === customerId);
-			setImages(album?.images);
-			setLoading(false);
-		})
-	}, [customerId, gallery])
+		const unsubscribe = db.collection('albums')
+			.doc(albumId)
+			.onSnapshot(doc => {
+				setLoading(true);
+
+				setImages(doc.data().images);
+				setLoading(false);
+			});
+			return unsubscribe;
+	}, [albumId]);
 
 	return {images, loading}
 }

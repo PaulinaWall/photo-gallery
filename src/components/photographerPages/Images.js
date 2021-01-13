@@ -1,103 +1,134 @@
-import React, { useState } from 'react';
-import { Row, Col, Card, Button, Container, Modal, Form } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Button, Container, Modal, Form, Alert } from 'react-bootstrap';
 import { SRLWrapper } from 'simple-react-lightbox';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import { useParams } from 'react-router-dom';
-import { uid } from 'uid';
+import { useParams, useNavigate } from 'react-router-dom';
 
-import { useCustomerFunctions } from '../../contexts/CustomerContext';
+import { db } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
+import useDeleteImage from '../../hooks/useDeleteImage';
+import CustomerUrlPage from './CustomerUrlPage';
+import ImageCard from './ImageCard';
 
-const Images = ({ images }) => {
+const Images = ({ images, album }) => {
+	const navigate = useNavigate()
 	const { albumId } = useParams();
-	const { checked, createCustomerAlbum } = useCustomerFunctions();
 	const { currentUser } = useAuth();
-	const [customerUrl, setCustomerUrl] = useState(false);
-	const [showCustomerUrl, setShowCustomerUrl] = useState(false);
 	const [albumTitle, setAlbumTitle] = useState('');
 	const [show, setShow] = useState(false);
+	const [error, setError] = useState();
+	const [imageToDelete, setImageToDelete] = useState(null);
+	useDeleteImage(imageToDelete, albumId);
+
+	useEffect(() => {
+		setAlbumTitle(album.albumTitle)
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
 
 	const filterCheckedImages = () => {
 		const checkedImages = images.filter((image) => image.checked === true);
+		checkedImages.forEach((image) => {
+			image.checked = false;
+		})
 		return checkedImages;
 	};
 
-	const handleCheckOnClick = (index) => {
-		checked(albumId, index, currentUser);
+	const handleCheckOnClick = async (index) => {
+		try{
+			await db.collection('albums').doc(albumId).get().then((doc) => {
+				const images = doc.data().images;
+				const image = doc.data().images[index];
+				image.checked = !image.checked;
+				images[index] = image;
+				db.collection('albums').doc(albumId).set({
+					...doc.data(),
+					images,
+				});
+			});
+		} catch(e) {
+			setError(e.message);
+		}
 	};
 
-	const handleCreateCustomerGallery = () => {
-		const randomId = uid(10);
-		setCustomerUrl(`http://localhost:3000/customer/${randomId}`);
-		setShowCustomerUrl(true);
+	const handleSaveNewAlbum = async () => {
 		const checkedImages = filterCheckedImages();
-		createCustomerAlbum(checkedImages, randomId);
+		try{
+			await db.collection('albums').add({
+				albumTitle,
+				fromCustomer: false,
+				owner: currentUser.uid,
+				images: checkedImages,
+			})
+			.then((docRef) => {
+				navigate(`/${currentUser.email}/${docRef.id}`);
+				setShow(false);
+			})
+		} catch (e) {
+			setError(e.message);
+		}
 	};
-
-	const handleCreateNewAlbumOnClick = () => {
-		setShow(true);
-	};
-
-	const handleSaveNewAlbum = () => {
+	
+	const handleCreateCustomerOnClick = async () => {
 		const checkedImages = filterCheckedImages();
-		createCustomerAlbum(checkedImages, albumTitle);
+		try{
+			await db.collection('albums').doc(albumId).set({
+				customerUrl: `${window.location.origin}/review/${albumId}`,
+				albumTitle,
+				fromCustomer: false,
+				owner: currentUser.uid,
+				images: checkedImages,
+			})
+		} catch (e) {
+			setError(e.message);
+		}
 	};
 
-	console.log(customerUrl)
+	const handleOnDelete = (index) => {
+		setImageToDelete(index);
+	};
+ 
 	return (
 		<Container>
 			<SRLWrapper>
 				<Row className="my-3">
 					{
-						images && (
-							<>
-								{images.map((image, index) => {
-								return	<Col sm={6} md={4} lg={3} key={index}>
-										<Card className="mb-3">
-											<Card.Header>
-												<FontAwesomeIcon
-													className={image.checked ? 'checkedIcon' : 'unCheckedIcon'} 
-													icon={faCheck} 
-													onClick={() => handleCheckOnClick(index)}
-												/>
-											</Card.Header>
-											<a href={image.url} title="View image in lightbox" data-attribute="SRL">
-												<Card.Img variant="top" src={image.url} title={image.name} />
-											</a>
-											<Card.Body>
-												<Card.Text className="text-muted small">
-													{image.name} ({Math.round(image.size/1024)} kb)
-												</Card.Text>
-											</Card.Body>
-										</Card>
-									</Col>
-								})}
-							</>
-						)
+						error && <Alert variant="danger">{error}</Alert>
+					}
+					{
+						images && images.map((image, index) => (
+							<Col sm={6} md={4} lg={3} key={index}>
+								<ImageCard
+									album={album}
+									image={image}
+									handleOnDelete={() => handleOnDelete(index)}
+									handleCheckOnClick={() => handleCheckOnClick(index)}
+								/>
+							</Col>
+						))
 					}
 				</Row>
 			</SRLWrapper>
-			<div className="d-flex flex-column">
-				<Button className="ml-auto mb-2" onClick={handleCreateCustomerGallery}>Create gallery for customer</Button>
+
+			
+
+			<div className="mb-3 d-flex flex-column">
+				{
+					!album.fromCustomer
+						? 
+							<>
+								{
+									album.customerUrl
+										? <CustomerUrlPage customerUrl={album.customerUrl} />
+										: <Button className="ml-auto mb-2" onClick={handleCreateCustomerOnClick}>Create gallery for customer</Button>
+								}
+
+								<Button onClick={() => setShow(true)} className="ml-auto">Create new album with marked images</Button>
+							</>
+						: ''
+				}
 				
-
-				<Button onClick={handleCreateNewAlbumOnClick} className="ml-auto">Create new album with marked images</Button>
 			</div>
-			<Modal
-				size="sm"
-				show={showCustomerUrl}
-				aria-labelledby="example-modal-sizes-title-sm"
-				onHide={() => setShowCustomerUrl(false)}
-			>
-				<Modal.Header closeButton>
-				<Modal.Title id="example-modal-sizes-title-sm">
-					{customerUrl}
-				</Modal.Title>
-				</Modal.Header>
-			</Modal>
 
-			<Modal show={show} onHide={() => setShow(false)}>
+			<Modal show={show} animation={false} onHide={() => setShow(false)}>
 				<Modal.Header closeButton>
 				<Modal.Title>Add album title</Modal.Title>
 				</Modal.Header>
