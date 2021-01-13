@@ -10,6 +10,7 @@
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.6.0",
     "bootstrap": "^4.5.3",
+    "express": "^4.17.1",
     "firebase": "^8.2.1",
     "history": "^5.0.0",
     "node-sass": "^4.14.1",
@@ -25,14 +26,9 @@
     "uid": "^2.0.0",
     "web-vitals": "^0.2.4"
   },
-
-  "engines": {
-    "npm": "6.12.1",
-    "node": "12.13.1"
-  },
-
+  
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server/server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
