@@ -4,13 +4,14 @@ import Image from 'react-bootstrap/Image';
 import { Link } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import polaroid1276996_1920 from '../../assets/images/polaroid-1276996_1920.jpg';
 import useGetAlbums from '../../hooks/useGetAlbums';
 import useDeleteAlbum from '../../hooks/useDeleteAlbum';
 import { useAuth } from '../../contexts/AuthContext';
 import { db } from '../../firebase';
+import AlbumCard from './AlbumCard';
 
 const ListAlbums = () => {
 	const { currentUser } = useAuth();
@@ -72,30 +73,12 @@ const ListAlbums = () => {
 								albums.map((album, index) => (
 									(album.owner === currentUser.uid) && (
 										<Col className="mt-3" sm={12} md={4} lg={4} key={index}>
-											<Card className="album-card">
-												<div className="mb-2 ml-auto pt-2 pr-2">
-													<FontAwesomeIcon
-														className="delete-icon"
-														icon={faTimes} 
-														onClick={() => handleDeleteOnClick(index)}
-													/>
-												</div>
-												<Link className="mb-3 albumList-links" to={`/${currentUser.email}/${album.id}`}>
-													<Card.Body className="pb-0 pt-0">
-														<Card.Title className="card-title">
-															<div className="card-title album-links">
-																
-																	{
-																		album.fromCustomer && 
-																			<p>Customer Album:</p>
-																	}
-																	{album.albumTitle}
-															</div>
-														</Card.Title>
-													</Card.Body>
-												</Link>
-												<Button className="m-3" onClick={() => handleShow(index, album.albumTitle)}>Change Album Title</Button>
-											</Card>
+											<AlbumCard 
+												album={album}
+												handleDeleteOnClick={() => handleDeleteOnClick(index)}
+												handleShow={() => handleShow(index, album.albumTitle)}
+												currentUser={currentUser}
+											/>
 										</Col>
 									)
 								))
