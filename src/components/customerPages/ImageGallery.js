@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { BarLoader, CircleLoader } from 'react-spinners';
+import { BarLoader } from 'react-spinners';
 import { SRLWrapper } from 'simple-react-lightbox';
-import { Row, Col, Card, Container, Button, Modal, Alert, Form } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { Row, Col, Container, Button, Modal, Alert } from 'react-bootstrap';
 
 import useGetImages from '../../hooks/useGetImages';
 import useGetSingleAlbum from '../../hooks/useGetSingleAlbum';
 import { db } from '../../firebase';
+import LikedNumber from './LikedNumber';
+import ImageCard from './ImageCard';
 
 const ImageGallery = () => {
 	const { albumId } = useParams();
@@ -17,18 +17,6 @@ const ImageGallery = () => {
 	const [msg, setMsg] = useState(null);
 	const [error, setError] = useState();
 	const [showModal, setShowModal] = useState(false)
-	const numberOfLikes = useRef(0);
-
-	useEffect(() => {
-		let likes = 0;
-		images?.forEach((image) => {
-			if(image.liked){
-				likes ++;
-			}
-		})
-		numberOfLikes.current = likes;
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
 
 	const filterLikedImages = () => {
 		const likedImages = images.filter((image) => image.liked === true);
@@ -51,17 +39,6 @@ const ImageGallery = () => {
 		}
 	}
 
-	const countNumberOfLikes = (image) => {
-		if(image === true){
-			numberOfLikes.current ++;
-		} else {
-			if(numberOfLikes.current === 0){
-				return;
-			}
-			numberOfLikes.current --;
-		}
-	};
-
 	const handleLikeOnClick = async (index) => {
 		try{
 			await db.collection('albums').doc(albumId).get().then((doc) => {
@@ -73,7 +50,6 @@ const ImageGallery = () => {
 					...doc.data(),
 					images,
 				});
-				countNumberOfLikes(image.liked);
 			});
 		} catch(e) {
 			setError(e.message);
@@ -99,26 +75,20 @@ const ImageGallery = () => {
 						images && 
 							images.map((image, index) => (
 								<Col sm={6} md={4} lg={3} key={index}>
-									<Card className="mb-3">
-										<Card.Header>
-											<FontAwesomeIcon
-												className={image.liked ? 'likedIcon' : 'unLikedIcon'} 
-												icon={faHeart} 
-												onClick={() => handleLikeOnClick(index)}
-											/>
-										</Card.Header>
-										<a href={image.url} title="View image in lightbox" data-attribute="SRL">
-											<Card.Img variant="top" src={image.url} title={image.name} />
-										</a>
-									</Card>
+									<ImageCard 
+										image={image} 
+										handleLikeOnClick={() => handleLikeOnClick(index)} 
+									/>
 								</Col>
 							))
 					}
 				</Row>
 			</SRLWrapper>
-			<div className="m-5">
+			<div className="mt-5 d-flex flex-column align-items-end">
 				{
-					<p>You liked: {numberOfLikes.current} pictures of {images?.length}!</p>
+					loading 
+						? <div className="d-flex justify-content-center my-5"><BarLoader color={"#888"} size={100}/></div>
+						: <LikedNumber images={images}/>
 				}
 				{
 					!msg
