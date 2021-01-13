@@ -1,9 +1,6 @@
 {
   "name": "photo-gallery",
   "version": "0.1.0",
-  "engines": {
-    "node": "12.13.1"
-  },
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
@@ -13,7 +10,6 @@
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.6.0",
     "bootstrap": "^4.5.3",
-    "express": "^4.17.1",
     "firebase": "^8.2.1",
     "history": "^5.0.0",
     "node-sass": "^4.14.1",
@@ -30,12 +26,10 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "dev": "react-scripts start",
-    "start": "serve -s build",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "heroku-postbuild": "npm run build"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
