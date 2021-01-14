@@ -46,11 +46,12 @@ const ListAlbums = () => {
 
 	const handleOnDelete = () => {
 		setShowDeleteModal(false)
+		setAlbumToDelete(albums[index]) 
 	};
 	
 	const handleDeleteOnClick = (index) => {
-		setAlbumToDelete(albums[index]) 
 		setShowDeleteModal(true);
+		setIndex(index);
 	}
 
 	return (
