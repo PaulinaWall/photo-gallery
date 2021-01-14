@@ -29,12 +29,15 @@ const SingleAlbum = () => {
 							</>
 					}
 
-					{loading
-						? (<div className="d-flex justify-content-center 		my-5"><BarLoader color={"#888"} size={100} /></div>)
-						: (<Images 
-							images={images} 
-							album={album}	
-						/>)
+					{
+						loading
+							? 	<div className="d-flex justify-content-center my-5">
+									<BarLoader color={"#888"} size={100} />
+								</div>
+							: 	<Images 
+									images={images} 
+									album={album}	
+								/>
 					}
 				</>
 			}
