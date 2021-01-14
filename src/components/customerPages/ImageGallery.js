@@ -16,7 +16,8 @@ const ImageGallery = () => {
 	const { album } = useGetSingleAlbum(albumId);
 	const [msg, setMsg] = useState(null);
 	const [error, setError] = useState();
-	const [showModal, setShowModal] = useState(false)
+	const [showModal, setShowModal] = useState(false);
+	const [sendError, setSendError] = useState();
 
 	const filterLikedImages = () => {
 		const likedImages = images.filter((image) => image.liked === true);
@@ -40,6 +41,7 @@ const ImageGallery = () => {
 	}
 
 	const handleLikeOnClick = async (index) => {
+		setSendError(false);
 		try{
 			await db.collection('albums').doc(albumId).get().then((doc) => {
 				const images = doc.data().images;
@@ -58,15 +60,19 @@ const ImageGallery = () => {
 
 	const handleSaveOnClick = () => {
 		const likedImages = filterLikedImages();
-		createNewAlbum(likedImages);
-		setMsg('Thanks for choosing your favorites!');
-		setShowModal(true);
+		if(!likedImages.length){
+			setSendError('Please choose atleast one image!')
+		}else{
+			createNewAlbum(likedImages);
+			setMsg('Thanks for choosing your favorites!');
+			setShowModal(true);
+		}
 	};
 
 	return(
 		<Container>
 			{
-				error && <Alert variant="danger">{error}</Alert>
+				error && <Alert className="mt-3" variant="danger">{error}</Alert>
 			}
 			{loading && (<div className="d-flex justify-content-center my-5"><BarLoader color={"#888"} size={100} /></div>)}
 			<SRLWrapper>
@@ -85,10 +91,14 @@ const ImageGallery = () => {
 				</Row>
 			</SRLWrapper>
 			<div className="mt-5 d-flex flex-column align-items-end">
+			
 				{
 					loading 
 						? <div className="d-flex justify-content-center my-5"><BarLoader color={"#888"} size={100}/></div>
 						: <LikedNumber images={images}/>
+				}
+				{
+					sendError && <Alert className="mt-3" variant="danger">{sendError}</Alert>
 				}
 				{
 					!msg
