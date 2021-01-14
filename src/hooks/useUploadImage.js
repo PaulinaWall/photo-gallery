@@ -8,58 +8,72 @@ const useUploadImage = (images, albumId = null) => {
 	const [error, setError] = useState(null);
 	const [isSuccess, setIsSuccess] = useState(false);
 	const { currentUser } = useAuth();
-	const uploadedImages = [];
-
+	
 	useEffect(() => {
-
-		if (!images) {
-			setUploadProgress(null);
-			//setUploadedImage(null);
+		(async () => {
+			const uploadedImages = [];
+	
+			await db.collection('albums').doc(albumId).get()
+			.then((doc) => {
+				uploadedImages.push(...doc.data().images);
+			});
+	
+			if (!images) {
+				setUploadProgress(null);
+				//setUploadedImage(null);
+				setError(null);
+				setIsSuccess(false);
+				return;
+			}
+	
 			setError(null);
 			setIsSuccess(false);
-			return;
-		}
-
-		setError(null);
-		setIsSuccess(false);
-		
-		images.forEach((image) => {
-
-			const uploadTask = storage.ref(`images/${currentUser.email}/${image.name}`).put(image);
-
-			const unsubscribe = uploadTask.on('state_changed', snapshot => {
-				setUploadProgress(Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100));
-			});
-
-			uploadTask.then(async snapshot => {
+			
+			images.forEach((image) => {
 	
-				const url = await snapshot.ref.getDownloadURL();
+				const uploadTask = storage.ref(`images/${currentUser.email}/${image.name}`).put(image);
 	
-				const img = {
-					name: image.name,
-					owner: currentUser.uid,
-					path: snapshot.ref.fullPath,
-					size: image.size,
-					type: image.type,
-					checked: false,
-					liked: false,
-					url,
-				};
-				
-				uploadedImages.push(img);
-				
-				await db.collection('albums').doc(albumId).update({
-					images: uploadedImages,
-				})
-				.then(() => {
-					setIsSuccess(true);
-					setUploadProgress(null);
+				const unsubscribe = uploadTask.on('state_changed', snapshot => {
+					setUploadProgress(Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100));
 				});
-			}).catch((e) => {
-				setError(e.code);
-			});
-			return unsubscribe;
-		}) 
+	
+				uploadTask.then(async snapshot => {
+		
+					const url = await snapshot.ref.getDownloadURL();
+		
+					const img = {
+						name: image.name,
+						owner: currentUser.uid,
+						path: snapshot.ref.fullPath,
+						size: image.size,
+						type: image.type,
+						checked: false,
+						liked: false,
+						url,
+					};
+	
+					const imageExists = uploadedImages.find((image) => image.path === img.path)
+	
+					if(!imageExists){
+						uploadedImages.push(img);
+					}else{
+						setError({ msg: `${image.name} (${Math.round(image.size / 1024)} kb) already exists` });
+					}
+	
+					await db.collection('albums').doc(albumId).update({
+						images: uploadedImages,
+					})
+					.then(() => {
+						setIsSuccess(true);
+						setUploadProgress(null);
+					});
+	
+				}).catch((e) => {
+					setError(e.msg);
+				});
+				return unsubscribe;
+			}) 
+		})()
 		
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [images, currentUser, albumId]);
