@@ -20,8 +20,8 @@ const Navigation = () => {
 								currentUser ? (
 									<NavDropdown title={'Menu'} id="basic-nav-dropdown">
 										<NavLink to="/photographer" className="dropdown-item">Home</NavLink>
-										<NavLink to={`/${currentUser.uid}/createAlbum`} className="dropdown-item">Create Album</NavLink>
-										<NavLink to={`/${currentUser.uid}/listAlbums`} className="dropdown-item">Your Albums</NavLink>
+										<NavLink to={`/${currentUser.email}/createAlbum`} className="dropdown-item">Create Album</NavLink>
+										<NavLink to={`/${currentUser.email}/listAlbums`} className="dropdown-item">Your Albums</NavLink>
 										<NavDropdown.Divider />
 										<NavLink to="/signout" className="dropdown-item">Sign Out</NavLink>
 									</NavDropdown>
