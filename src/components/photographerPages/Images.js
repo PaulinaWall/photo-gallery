@@ -49,8 +49,8 @@ const Images = ({ images, album }) => {
 				owner: currentUser.uid,
 				images: checkedImages,
 			})
-			.then((docRef) => {
-				navigate(`/${currentUser.email}/${docRef.id}`);
+			.then(() => {
+				navigate(`/${currentUser.email}/listAlbums`);
 				setShow(false);
 			})
 		} catch (e) {
