@@ -20,7 +20,6 @@ const useUploadImage = (images, albumId = null) => {
 	
 			if (!images) {
 				setUploadProgress(null);
-				//setUploadedImage(null);
 				setError(null);
 				setIsSuccess(false);
 				return;

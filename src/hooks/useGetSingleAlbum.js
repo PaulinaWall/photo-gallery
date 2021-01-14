@@ -6,7 +6,8 @@ const useGetSingleAlbum = (albumId) => {
 	const [loadingAlbum, setLoadingAlbum] = useState(true);
 
 	useEffect(() => {
-		const unsubscribe = db.collection('albums').doc(albumId).onSnapshot(snapshot => {
+		const unsubscribe = db.collection('albums').doc(albumId)
+		.onSnapshot(snapshot => {
 			setLoadingAlbum(true)
 			setAlbum(snapshot.data());
 			setLoadingAlbum(false)

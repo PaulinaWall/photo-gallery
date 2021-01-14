@@ -6,7 +6,8 @@ const useGetAlbums = () => {
 	const [loading, setLoading] = useState(true)
 
 	useEffect(() => {
-		const unsubscribe = db.collection('albums').onSnapshot(snapshot => {
+		const unsubscribe = db.collection('albums')
+		.onSnapshot(snapshot => {
 			setLoading(true)
 			const snapshotAlbums = []
 
