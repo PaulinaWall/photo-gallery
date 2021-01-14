@@ -5,15 +5,16 @@ import { useAuth } from '../contexts/AuthContext';
 
 const useUploadImage = (images, albumId = null) => {
 	const [uploadProgress, setUploadProgress] = useState(null);
-	const [uploadedImage, setUploadedImage] = useState(null);
 	const [error, setError] = useState(null);
 	const [isSuccess, setIsSuccess] = useState(false);
 	const { currentUser } = useAuth();
+	const uploadedImages = [];
 
 	useEffect(() => {
+
 		if (!images) {
 			setUploadProgress(null);
-			setUploadedImage(null);
+			//setUploadedImage(null);
 			setError(null);
 			setIsSuccess(false);
 			return;
@@ -21,16 +22,13 @@ const useUploadImage = (images, albumId = null) => {
 
 		setError(null);
 		setIsSuccess(false);
+		
+		images.forEach((image) => {
 
-		let fileRef;
-		let uploadTask;
-		const unsubscribe = images.forEach((image) => {
-			fileRef = storage.ref(`images/${currentUser.email}/${image.name}`);
+			const uploadTask = storage.ref(`images/${currentUser.email}/${image.name}`).put(image);
 
-			uploadTask = fileRef.put(image);
-
-			uploadTask.on('state_changed', taskSnapshot => {
-				setUploadProgress(Math.round((taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) * 100));
+			const unsubscribe = uploadTask.on('state_changed', snapshot => {
+				setUploadProgress(Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100));
 			});
 
 			uploadTask.then(async snapshot => {
@@ -47,34 +45,26 @@ const useUploadImage = (images, albumId = null) => {
 					liked: false,
 					url,
 				};
-	
-				const unsubscribe = await db.collection('albums').doc(albumId).get()
-				.then((snapshot) => {
-					const images = snapshot.data().images;
-					images.push(img);
-					db.collection('albums').doc(albumId).update({
-						images,
-					})
-				})
-	
-				setIsSuccess(true);
-				setUploadProgress(null);
-	
-				setUploadedImage(img);
-				setIsSuccess(true);
 				
-				return unsubscribe;
-	
+				uploadedImages.push(img);
+				
+				await db.collection('albums').doc(albumId).update({
+					images: uploadedImages,
+				})
+				.then(() => {
+					setIsSuccess(true);
+					setUploadProgress(null);
+				});
 			}).catch((e) => {
 				setError(e.code);
 			});
+			return unsubscribe;
 		}) 
 		
-		return unsubscribe;
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [images, currentUser]);
+	}, [images, currentUser, albumId]);
 
-	return { uploadProgress, uploadedImage, error, isSuccess };
+	return { uploadProgress, error, isSuccess };
 }
 
 export default useUploadImage;
