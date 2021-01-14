@@ -10,11 +10,14 @@ const ImageCard = ({ album, image, handleOnDelete, handleCheckOnClick }) => {
 			{
 				(!album.fromCustomer) &&
 					<div className="d-flex justify-content-between">
-						<FontAwesomeIcon
-							className={image.checked ? 'checkedIcon' : 'unCheckedIcon'} 
-							icon={faCheck} 
-							onClick={handleCheckOnClick}
-						/>
+						{
+							!album.toCustomer && 
+								<FontAwesomeIcon
+									className={image.checked ? 'checkedIcon' : 'unCheckedIcon'} 
+									icon={faCheck} 
+									onClick={handleCheckOnClick}
+								/>
+						}
 						<FontAwesomeIcon
 							className="delete-icon"
 							icon={faTimes} 

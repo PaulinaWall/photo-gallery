@@ -21,7 +21,11 @@ const AlbumCard = ({ album, handleDeleteOnClick, currentUser, handleShow }) => {
 							
 								{
 									album.fromCustomer && 
-										<p>Customer Album:</p>
+										<p>From Customer:</p>
+								}
+								{
+									album.toCustomer && 
+										<p>To Customer:</p>
 								}
 								{album.albumTitle}
 						</div>

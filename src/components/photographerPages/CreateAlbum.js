@@ -26,6 +26,7 @@ const CreateAlbum = () => {
 				owner: currentUser.uid,
 				images: [],
 				fromCustomer: false,
+				toCustomer: false,
 			});
 
 			navigate(`/${currentUser.email}/listAlbums`);

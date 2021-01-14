@@ -6,6 +6,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import useDeleteImage from '../../hooks/useDeleteImage';
+import useSetCheckedImages from '../../hooks/useSetCheckedImages';
 import CustomerUrlPage from './CustomerUrlPage';
 import ImageCard from './ImageCard';
 
@@ -17,7 +18,9 @@ const Images = ({ images, album }) => {
 	const [show, setShow] = useState(false);
 	const [error, setError] = useState();
 	const [imageToDelete, setImageToDelete] = useState(null);
+	const [index, setIndex] = useState(null);
 	useDeleteImage(imageToDelete, albumId);
+	const { errorChecked } = useSetCheckedImages(index, albumId);
 
 	useEffect(() => {
 		setAlbumTitle(album.albumTitle)
@@ -32,21 +35,8 @@ const Images = ({ images, album }) => {
 		return checkedImages;
 	};
 
-	const handleCheckOnClick = async (index) => {
-		try{
-			await db.collection('albums').doc(albumId).get().then((doc) => {
-				const images = doc.data().images;
-				const image = doc.data().images[index];
-				image.checked = !image.checked;
-				images[index] = image;
-				db.collection('albums').doc(albumId).set({
-					...doc.data(),
-					images,
-				});
-			});
-		} catch(e) {
-			setError(e.message);
-		}
+	const handleCheckOnClick = (index) => {
+		setIndex(index)
 	};
 
 	const handleSaveNewAlbum = async () => {
@@ -55,27 +45,13 @@ const Images = ({ images, album }) => {
 			await db.collection('albums').add({
 				albumTitle,
 				fromCustomer: false,
+				toCustomer: true,
 				owner: currentUser.uid,
 				images: checkedImages,
 			})
 			.then((docRef) => {
 				navigate(`/${currentUser.email}/${docRef.id}`);
 				setShow(false);
-			})
-		} catch (e) {
-			setError(e.message);
-		}
-	};
-	
-	const handleCreateCustomerOnClick = async () => {
-		const checkedImages = filterCheckedImages();
-		try{
-			await db.collection('albums').doc(albumId).set({
-				customerUrl: `${window.location.origin}/review/${albumId}`,
-				albumTitle,
-				fromCustomer: false,
-				owner: currentUser.uid,
-				images: checkedImages,
 			})
 		} catch (e) {
 			setError(e.message);
@@ -91,7 +67,7 @@ const Images = ({ images, album }) => {
 			<SRLWrapper>
 				<Row className="my-3">
 					{
-						error && <Alert variant="danger">{error}</Alert>
+						(error || errorChecked) && <Alert variant="danger">{error}</Alert>
 					}
 					{
 						images && images.map((image, index) => (
@@ -116,12 +92,10 @@ const Images = ({ images, album }) => {
 						? 
 							<>
 								{
-									album.customerUrl
-										? <CustomerUrlPage customerUrl={album.customerUrl} />
-										: <Button className="ml-auto mb-2" onClick={handleCreateCustomerOnClick}>Create gallery for customer</Button>
+									album.toCustomer
+										? <CustomerUrlPage customerUrl={`${window.location.origin}/review/${albumId}`} />
+										: <Button onClick={() => setShow(true)} className="ml-auto">Create new album with marked images</Button>
 								}
-
-								<Button onClick={() => setShow(true)} className="ml-auto">Create new album with marked images</Button>
 							</>
 						: ''
 				}
